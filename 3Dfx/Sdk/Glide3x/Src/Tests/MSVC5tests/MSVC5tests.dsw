@@ -1,0 +1,572 @@
+Microsoft Developer Studio Workspace File, Format Version 5.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "test00"=.\test00.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test01"=.\test01.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test02"=.\test02.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test03"=.\test03.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test04"=.\test04.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test05"=.\test05.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test06"=.\test06.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test07"=.\test07.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test08"=.\test08.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test09"=.\test09.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test10"=.\test10.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test11"=.\test11.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test12"=.\test12.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test13"=.\test13.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test14"=.\test14.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test15"=.\test15.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test16"=.\test16.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test17"=.\test17.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test18"=.\test18.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test19"=.\test19.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test20"=.\test20.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test21"=.\test21.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test22"=.\test22.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test23"=.\test23.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test24"=.\test24.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test25"=.\test25.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test26"=.\test26.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test27"=.\test27.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test28"=.\test28.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test29"=.\test29.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test30"=.\test30.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test31"=.\test31.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test32"=.\test32.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tlib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test33"=.\test33.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test34"=.\test34.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test35"=.\test35.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "test36"=.\test36.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "tlib"=.\tlib\tlib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
