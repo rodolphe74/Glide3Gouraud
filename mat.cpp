@@ -9,27 +9,27 @@ unsigned mat::count_deletions = 0;
 #endif
 
 mat::mat(int row_num, int col_num) : r(row_num), c(col_num) {
-	ASSERT(row_num > 0 && col_num > 0, "Number of Rows and Columns should be positive.")
-
-		data = new float[row_num * col_num](); CREATE_INC
+	//ASSERT(row_num > 0 && col_num > 0, "Number of Rows and Columns should be positive.")
+	data = new float[row_num * col_num](); CREATE_INC
 }
 
 mat::mat(int row_num) : r(row_num), c(1) {
-	ASSERT(row_num > 0, "Number of elements should be positive.")
-		data = new float[row_num](); CREATE_INC
+	//ASSERT(row_num > 0, "Number of elements should be positive.")
+	data = new float[row_num](); CREATE_INC
 }
 
 mat::mat(std::initializer_list<std::initializer_list<float>> lst) {
-	ASSERT(lst.size() > 0, "Initialisation list should not be empty")
-		auto &l = lst.begin()[0];
-	ASSERT(l.size() > 0, "Initialization list should not be empty")
-		r = lst.size(), c = l.size();
+	//ASSERT(lst.size() > 0, "Initialisation list should not be empty")
+	auto &l = lst.begin()[0];
+	//ASSERT(l.size() > 0, "Initialization list should not be empty")
+	r = lst.size(), c = l.size();
 	data = new float[r * c]; CREATE_INC
 		int i = 0, j = 0;
 	for (const auto &list_row : lst) {
 		j = 0;
 		for (const auto &value : list_row) {
-			data[i * c + j] = value;
+			// data[i * c + j] = value;
+			*(data + i * c + j) = value;
 			j++;
 		}
 		i++;
@@ -37,11 +37,12 @@ mat::mat(std::initializer_list<std::initializer_list<float>> lst) {
 }
 
 mat::mat(std::initializer_list<float> lst) : r(lst.size()), c(1) {
-	ASSERT(lst.size() > 0, "Initialisation list should not be empty")
-		data = new float[r * c]; CREATE_INC
+	//ASSERT(lst.size() > 0, "Initialisation list should not be empty")
+	data = new float[r * c]; CREATE_INC
 		int i = 0;
 	for (const auto &l : lst) {
-		data[i] = l;
+		//data[i] = l;
+		*(data + i) = l;
 		i++;
 	}
 }
@@ -64,7 +65,7 @@ mat &mat::operator=(const mat &that) {
 
 void mat::rotationX(float angle)
 {
-	ASSERT(c == 4 && r == 4, "matrix must be 4x4");
+	//ASSERT(c == 4 && r == 4, "matrix must be 4x4");
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
 	memset(data, 0, r * c * sizeof(float));
@@ -78,7 +79,7 @@ void mat::rotationX(float angle)
 
 void mat::rotationY(float angle)
 {
-	ASSERT(c == 4 && r == 4, "matrix must be 4x4");
+	//ASSERT(c == 4 && r == 4, "matrix must be 4x4");
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
 	memset(data, 0, r * c * sizeof(float));
@@ -92,7 +93,7 @@ void mat::rotationY(float angle)
 
 void mat::rotationZ(float angle)
 {
-	ASSERT(c == 4 && r == 4, "matrix must be 4x4");
+	//ASSERT(c == 4 && r == 4, "matrix must be 4x4");
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
 	memset(data, 0, r * c * sizeof(float));
@@ -106,8 +107,8 @@ void mat::rotationZ(float angle)
 
 void mat::translation(vec &v)
 {
-	ASSERT(c == 4 && r == 4, "matrix must be 4x4");
-	ASSERT(v.rows() >= 3, "vector must be a least 3");
+	//ASSERT(c == 4 && r == 4, "matrix must be 4x4");
+	//ASSERT(v.rows() >= 3, "vector must be a least 3");
 	memset(data, 0, r * c * sizeof(float));
 	data[0] = 1;
 	data[5] = 1;

@@ -46,12 +46,12 @@ static _color _red = { 255, 0, 0 };
 class Obj
 {
 private:
-	_object o;
 	void cut(char *src, int start, int end, char *target);
 	void split(char *string, char sep, char token_array[][50]);
 
 
 public:
+	_object o;
 	Obj();
 	Obj(int length, ...);
 	Obj(const char *filename);

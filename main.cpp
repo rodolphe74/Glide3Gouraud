@@ -8,12 +8,10 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-
-//#include <glide.h>
 #include <windows.h>
 #include "globals.h"
+#include "obj.h"
 #include "3d.h"
-#include "mathc.h"
 #include "mat.h"
 #include "obj.h"
 
@@ -22,27 +20,13 @@
 #include <sstream> 
 #include <fstream>
 
+#include "matrix.h"
 
-
-//typedef struct {
-//	FxFloat x, y;	// (x,y) coordinates
-//	FxU32 argb;		// color of each vertex
-//} Vertex;
-
-//Vertex t[3], l[2];
-
-
-Fx::Vertex t[4], l[2];
-
-//std::ofstream fout("Fx.log");
-
-// Global 3D objects
-object *o;
+Obj *o;
 light *lg;
-object *lo;
 
 // 3D maths objects
-vec fromPosition{ 0.0f, 0.0f, 8.0f };
+vec fromPosition{ 0.0f, 0.0f, 20.0f };
 vec toTarget{ 0.0f, 0.0f, 0.0f };
 vec up{ 0.0f, 1.0f, 0.0f };
 mat view(4, 4);
@@ -51,62 +35,88 @@ mat perspective(4, 4);
 
 int Start(HWND hwin)
 {
-	Obj *oo = new Obj("./cube.obj");
-	delete oo;
+	// DEBUG
+	//Matrix m(VTYPE::VEC3);
+	//m.vecSetAt(0, 1);
+	//m.vecSetAt(1, 2);
+	//m.vecSetAt(2, 3);
+	//std::ofstream out("matrix.log", std::ios_base::app);
+	//out << m << std::endl;
+	//m.setType(VTYPE::MAT4);
+	//m.matSetAt(0, 0, 1);
+	//m.matSetAt(1, 0, 2);
+	//m.matSetAt(2, 0, 3);
+	//m.matSetAt(3, 0, 4);
+	//m.matSetAt(0, 1, 5);
+	//m.matSetAt(1, 1, 6);
+	//m.matSetAt(2, 1, 7);
+	//m.matSetAt(3, 1, 8);
+	//m.matSetAt(0, 2, 9);
+	//m.matSetAt(1, 2, 10);
+	//m.matSetAt(2, 2, 11);
+	//m.matSetAt(3, 2, 12);
+	//m.matSetAt(0, 3, 13);
+	//m.matSetAt(1, 3, 14);
+	//m.matSetAt(2, 3, 15);
+	//m.matSetAt(3, 3, 16);
+	//out << m << std::endl;
 
 
-	/*vec fromPosition{ 0.0f, 0.0f, 5.0f };
-	vec toTarget{ 0.0f, 0.0f, 0.0f };
-	vec up{ 0.0f, 1.0f, 0.0f };*/
-	/*mat view(4, 4);*/
+	//Matrix n(VTYPE::VEC4);
+	//n.vecSetAt(0, 1);
+	//n.vecSetAt(1, 2);
+	//n.vecSetAt(2, 3);
+	//n.vecSetAt(3, 4);
+	//// n.matMul(m);
+	//out << m << std::endl;
+	//out << n << std::endl;
+	//n.matMul(m);
+	//out << n << std::endl;
+
+
+	//Matrix p({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, VTYPE::MAT3);
+	//Matrix q({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, VTYPE::MAT3);
+	//out << p << std::endl;
+	//out << q << std::endl;
+
+	//Matrix r(VTYPE::MAT3);
+	//startLap();
+	//for (int i = 0; i < 1000000; i++) {
+	//	r.copy(p);
+	//	r.matMul(q);
+	//}
+	//endLap("mul");
+	//out << r << std::endl;
+
+	//startLap();
+	//q.storeTransposed();	// allow faster column slices retrieval
+	//for (int i = 0; i < 1000000; i++) {
+	//	r.copy(p);
+	//	r.matMulMmx(q);
+	//}
+	//endLap("mulmmx");
+	//out << r << std::endl;
+
+	//Matrix s({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
+	//Matrix t({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, MAT3);
+	//s.matMul(t);
+	//out << s << std::endl;
+	//Matrix u({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
+	//t.storeTransposed();
+	//u.matMulMmx(t);
+	//out << u << std::endl;
+
+	//exit(1);
+	////////
+
+
 	_lookAt(fromPosition, toTarget, up, view);
-	//fout << view << std::endl;
-
-	/*mat perspective(4, 4);*/
 	_perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, perspective);
-	//fout << perspective << std::endl;
-
-	//typedef struct light {
-	//	float	pos[VEC4_SIZE];
-	//	float	intensity;
-	//	color		c;
-	//} light;
 
 	color c = { 255, 255, 255 };
 	lg = create_light(0.0f, 0.0f, 8.0f, c, 255.0f);
-	//light = new Light(0.0f, 0.0f, 8.0f, color(255, 255, 255), 255.0f);
 
-	mat rotationMatX(4, 4);
-	//fout << rotationMatX << std::endl;
-	//mat4_rotation_y(rotationMatX.getData(), TO_RADIAN(30.0f));
-	rotationMatX.rotationZ((float)TO_RADIAN(30.0f));
-	//fout << rotationMatX << std::endl;
-
-
-	mat translation(4, 4);
-	vec v({ 1, 2, 3 });
-	translation.translation(v);
-	//fout << translation << std::endl;
-
-
-	// Load a 3d object
-	o = create_object(0);
-	o->color = c;
-	create_object_from_obj_file(o, (char *)"./cube.obj");
-	//fout << "object size :" << o->length << std::endl;
-	/*renderObject(lg, o, view, perspective, fromPosition, 640, 480, false);*/
-	//free_object(o);
-
-	//WCHAR    str1[50];
-	//WCHAR    str2[50];
-
-	//MultiByteToWideChar(0, 0, "Press the <ESC> key to exit", 50, str1, 50);
-	//MultiByteToWideChar(0, 0, "Glide 3 Tutorial - Tutorial demo 4", 50, str2, 50);
-
-	//MessageBox(hwin,
-	//	str1,
-	//	str2,
-	//	0);
+	o = new Obj("./donkey.obj");
 
 	// Init Glide
 	grGlideInit();
@@ -142,16 +152,6 @@ int Start(HWND hwin)
 	grDepthBufferFunction(GR_CMP_LESS);
 	grDepthMask(FXTRUE);
 
-	// Set coordinates for line to [(100,450),(50,50)]
-	l[0].x = 100; l[0].y = 50;  l[0].argb = 0x000000ff; l[0].z = 20;
-	l[1].x = 450; l[1].y = 50;  l[1].argb = 0x00ff0000; l[1].z = 20;
-
-	// Set coordinates for triangle to [(300,300),(400,400),(400,300)]
-	t[0].x = t[0].y = 100;		t[0].argb = 0x00ff0000;
-	t[1].x = t[1].y = 450;		t[1].argb = 0x0000ff00;
-	t[2].x = 450; t[2].y = 100; t[2].argb = 0x000000ff;
-	t[3].x = 200; t[3].y = 200; t[2].argb = 0x000000ff;
-
 	return 1;
 }
 
@@ -159,7 +159,7 @@ void End()
 {
 	// Correctly terminates Glide
 	grGlideShutdown();
-	free_object(o);
+	delete o;
 }
 
 int Update()
@@ -167,23 +167,15 @@ int Update()
 	// Clear buffers : color buffer = 0, alpha buffer and depth buffer : not used
 	grBufferClear(0, 0, 0xFFFF);
 
-	// Note that there is no need to set the constant color.  It's not used.
-
-	// Draw primitives
-	//grDrawLine(&l[0], &l[1]);
-	//grDrawTriangle(&t[0], &t[1], &t[2]);
-
-	//grCullMode(GR_CULL_POSITIVE);
-	//grDrawVertexArrayContiguous(GR_POLYGON, 5, t, sizeof(Fx::Vertex));
-
 	mat rotationMatY(4, 4);
-	mat rotationMatZ(4, 4);
 	rotationMatY.rotationY((float)TO_RADIAN(1.0f));
-	transform_object(o, rotationMatY);
-	rotationMatZ.rotationZ((float)TO_RADIAN(0.8f));
-	transform_object(o, rotationMatZ);
+	transformObject(*o, rotationMatY);
 
-	renderObject(lg, o, view, perspective, fromPosition, 640, 480, false);
+	mat rotationMatZ(4, 4);
+	rotationMatZ.rotationZ((float)TO_RADIAN(0.8f));
+	transformObject(*o, rotationMatZ);
+
+	renderObject(lg, *o, view, perspective, fromPosition, 640, 480, false);
 
 	// Wait for vertical retrace and Swap buffers.
 	grBufferSwap(1);

@@ -95,6 +95,9 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;__MSC__</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\3Dfx\Sdk\Glide3x\Src\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +144,7 @@
     <ClCompile Include="llist.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mat.cpp" />
+    <ClCompile Include="matrix.cpp" />
     <ClCompile Include="obj.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +152,7 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="llist.h" />
     <ClInclude Include="mat.h" />
+    <ClInclude Include="matrix.h" />
     <ClInclude Include="obj.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

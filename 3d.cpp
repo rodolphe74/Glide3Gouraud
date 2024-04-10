@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <math>
 #include <float.h>
 #include "3d.h"
 #include "llist.h"
@@ -17,20 +16,23 @@
 #define CETTE_CONSTANTE_JUSTE_POUR_AVOIR_UN_Z_BUFFER_POSITIF 32
 #define MILLEVINGTQUATRE 1024
 
+static std::chrono::steady_clock::time_point beginTime;
+static std::chrono::steady_clock::time_point endTime;
+
 
 // Bronze
-//float diffuseLightColor[] = {1.0f, 0.5f, 0.31f}; // white light diffuse
-//float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
-//float ambient[] = {1.0f, 0.5f, 0.31f};
-//float specularStrength = 1.0f;
-//int shininess = 52;
+float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
+float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
+float ambient[] = { 1.0f, 0.5f, 0.31f };
+float specularStrength = 1.0f;
+int shininess = 52;
 
 // Turquoise
-float diffuseLightColor[] = { 0.396f, 0.74151f, 0.69102f };
-float specularLightColor[] = { 0.297254f, 0.30829f, 0.306678f };
-float ambient[] = { 0.1f, 0.18725f,    0.1745f };
-float specularStrength = 1.0f;
-int shininess = 26;
+//float diffuseLightColor[] = { 0.396f, 0.74151f, 0.69102f };
+//float specularLightColor[] = { 0.297254f, 0.30829f, 0.306678f };
+//float ambient[] = { 0.1f, 0.18725f,    0.1745f };
+//float specularStrength = 1.0f;
+//int shininess = 26;
 
 // Black rubber
 //float diffuseLightColor[] = { 0.01f, 0.01f, 0.01f };
@@ -78,7 +80,7 @@ void _perspective(float fov_y, float aspect, float n, float f, mat &mat)
 	};
 }
 
-vec getVertexAsVector(vertex *v)
+vec getVertexAsVector(_vertex *v)
 {
 	vec vc(3);
 	vc[0] = v->pos[0];
@@ -87,7 +89,7 @@ vec getVertexAsVector(vertex *v)
 	return vc;
 }
 
-vec getVertexNormalsAsVector(vertex *v)
+vec getVertexNormalsAsVector(_vertex *v)
 {
 	vec vc(3);
 	vc[0] = v->normal[0];
@@ -114,6 +116,15 @@ vec getLightColor(light *l)
 	return vc;
 }
 
+vec getObjectColor(Obj &o)
+{
+	vec vc(3);
+	vc[0] = o.o.color.r;
+	vc[1] = o.o.color.g;
+	vc[2] = o.o.color.b;
+	return vc;
+}
+
 vec getObjectColor(object *o)
 {
 	vec vc(3);
@@ -123,79 +134,39 @@ vec getObjectColor(object *o)
 	return vc;
 }
 
-vertex *create_vertex(double x, double y, double z)
+void translateObject(Obj &o, vec &v)
 {
-	vertex *v = (vertex *) malloc(sizeof(vertex));
-
-	v->pos[0] = (float) x;
-	v->pos[1] = (float) y;
-	v->pos[2] = (float) z;
-	v->pos[3] = (float) 1;
-	v->colour = white;
-	return v;
-}
-
-vertex *create_vertex_color(double x, double y, double z, color c)
-{
-	vertex *v = create_vertex(x, y, z);
-
-	v->colour = c;
-	// printf("color %d %d %d\n", v->colour.r, v->colour.g, v->colour.b);
-	return v;
-}
-
-void set_normal(vertex *v, float x, float y, float z)
-{
-	v->normal[0] = x;
-	v->normal[1] = y;
-	v->normal[2] = z;
-	v->normal[3] = 1.0f;
-}
-
-
-double get_vertex_coord(vertex *v, int i)
-{
-	return v->pos[i];
-}
-
-void print_vertex(vertex *v)
-{
-	printf(">[%lf %lf %lf %lf]\n", get_vertex_coord(v, 0), get_vertex_coord(v, 1), get_vertex_coord(v, 2), get_vertex_coord(v, 3));
-}
-
-void free_vertex(vertex *v)
-{
-	free(v);
-}
-
-
-face *create_face(int length, ...)
-{
-	face *f = (face *) malloc(sizeof(face));
-
-	f->length = length;
-	f->vertices = (vertex **) malloc(length * sizeof(vertex *));
-	va_list valist;
-
-	va_start(valist, length);
-	for (int i = 0; i < length; i++) {
-		vertex *v = va_arg(valist, vertex *);
-		f->vertices[i] = v;
+	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
+		_vertex *vx = o.o.verticesList[i];
+		vec vcx = getVertexAsVector(vx);
+		vcx.mult3(v);
+		vx->pos[0] = vcx[0];
+		vx->pos[1] = vcx[1];
+		vx->pos[2] = vcx[2];
+		vec vcn = getVertexNormalsAsVector(vx);
+		vcn.mult3(v);
+		vx->normal[0] = vcn[0];
+		vx->normal[1] = vcn[1];
+		vx->normal[2] = vcn[2];
 	}
-	va_end(valist);
-	return f;
 }
 
-int add_vertex_to_face(face *f, vertex *v)
+void transformObject(Obj &o, mat &m)
 {
-	f->vertices = (vertex **) realloc(f->vertices, (f->length + 1) * sizeof(vertex *));
-	if (f->vertices == NULL)
-		return 0;
-	f->vertices[f->length] = v;
-	f->length++;
-	return 1;
+	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
+		_vertex *vx = o.o.verticesList[i];
+		vec vcx = getVertexAsVector(vx);
+		vcx.multMat4(m);
+		vx->pos[0] = vcx[0];
+		vx->pos[1] = vcx[1];
+		vx->pos[2] = vcx[2];
+		vec vcn = getVertexNormalsAsVector(vx);
+		vcn.multMat4(m);
+		vx->normal[0] = vcn[0];
+		vx->normal[1] = vcn[1];
+		vx->normal[2] = vcn[2];
+	}
 }
-
 
 void compute_normal(face *f)
 {
@@ -214,157 +185,41 @@ void compute_normal(face *f)
 	//}
 }
 
-void free_face(face *f)
-{
-	for (int i = 0; i < f->length; i++)
-		free_vertex(f->vertices[i]);
-	free(f->vertices);
-	free(f);
-}
-
-
-object *create_object(int length, ...)
-{
-	object *o = (object *) malloc(sizeof(object));
-
-	o->length = length;
-	o->faces = (face **) malloc(length * sizeof(face *));
-	o->vertices_list = NULL;
-	va_list valist;
-
-	va_start(valist, length);
-	for (int i = 0; i < length; i++) {
-		face *f = va_arg(valist, face *);
-		o->faces[i] = f;
-	}
-	va_end(valist);
-	update_vertices_list(o);
-
-	return o;
-}
-
-
-int add_face_to_object(object *o, face *f)
-{
-	o->faces = (face **) realloc(o->faces, (o->length + 1) * sizeof(face *));
-	if (o->faces == NULL)
-		return 0;
-	o->faces[o->length] = f;
-	o->length++;
-	return 1;
-}
-
-void update_vertices_list(object *o)
-{
-	freelist(o->vertices_list);
-	o->vertices_list = NULL;
-	node *root = o->vertices_list;
-
-	for (int i = 0; i < o->length; i++) {
-		face *f = o->faces[i];
-		for (int j = 0; j < f->length; j++) {
-			vertex *v = f->vertices[j];
-			node *nf = find(root, v);
-			if (!nf)
-				root = addnode(root, v);
-		}
-	}
-	o->vertices_list = root;
-}
-
-void translate_object(object *o, vec tv)
-{
-	for (node *n = o->vertices_list; n != NULL; n = n->next) {
-		vertex *vx = (vertex *)n->data;
-		vec vcx = getVertexAsVector(vx);
-		vcx.mult3(tv);
-		vx->pos[0] = vcx[0];
-		vx->pos[1] = vcx[1];
-		vx->pos[2] = vcx[2];
-		vec vcn = getVertexNormalsAsVector(vx);
-		vcn.mult3(tv);
-		vx->normal[0] = vcn[0];
-		vx->normal[1] = vcn[1];
-		vx->normal[2] = vcn[2];
-	}
-}
-
-void transform_object(object *o, mat tm)
-{
-	for (node *n = o->vertices_list; n != NULL; n = n->next) {
-		vertex *vx = (vertex *)n->data;
-		vec vcx = getVertexAsVector(vx);
-		vcx.multMat4(tm);
-		vx->pos[0] = vcx[0];
-		vx->pos[1] = vcx[1];
-		vx->pos[2] = vcx[2];
-		vec vcn = getVertexNormalsAsVector(vx);
-		vcn.multMat4(tm);
-		vx->normal[0] = vcn[0];
-		vx->normal[1] = vcn[1];
-		vx->normal[2] = vcn[2];
-	}
-}
-
-void free_object(object *o)
-{
-	// MAJ liste des vertices
-	// printf("%p\n", (void*) o->vertices_list);
-	update_vertices_list(o);
-
-	// Suppression des vertices de la liste créée
-	// la liste permet d'éviter les double free
-	for (node *n = o->vertices_list; n != NULL; n = n->next)
-		free_vertex((vertex *) n->data);
-
-	// Suppression des faces
-	for (int i = 0; i < o->length; i++)
-		free(o->faces[i]);
-
-	// Suppression de la liste
-	freelist(o->vertices_list);
-
-	// Suppression de l'objet
-	free(o);
-}
-
-
-
-void create_sphere(object *o, int sectors, int stacks, float radius)
+void createSphere(Obj &o, int sectors, int stacks, float radius)
 {
 	float x, y, z, xy;                              // vertex position
-	float nx, ny, nz, length_inv = 1.0f / radius;   // vertex normal
+	float nx, ny, nz, lengthInv = 1.0f / radius;   // vertex normal
 	//float s, t;                                     // vertex texCoord
 
-	float sector_step = (float) (2 * M_PI / sectors);
-	float stack_step = (float) (M_PI / stacks);
-	float sector_angle, stack_angle;
+	float sectorStep = (float)(2 * M_PI / sectors);
+	float stackStep = (float)(M_PI / stacks);
+	float sectorAngle, stackAngle;
 
-	vertex **vertices = (vertex **) malloc((sectors + 1) * (stacks + 1) * sizeof(vertex *));
+	_vertex **vertices = (_vertex **)malloc((sectors + 1) * (stacks + 1) * sizeof(vertex *));
 
 	printf("malloc %d\n", (sectors + 1) * (stacks + 1));
 
 	int count = 0;
 
 	for (int i = 0; i <= stacks; ++i) {
-		stack_angle = (float) M_PI / 2 - i * stack_step;        // starting from pi/2 to -pi/2
-		xy = radius * cos/*f*/(stack_angle);                // r * cos(u)
-		z = radius * sin/*f*/(stack_angle);                 // r * sin(u)
+		stackAngle = (float)M_PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+		xy = radius * cos/*f*/(stackAngle);                // r * cos(u)
+		z = radius * sin/*f*/(stackAngle);                 // r * sin(u)
 
 		// add (sectorCount+1) vertices per stack
 		// the first and last vertices have same position and normal, but different tex coords
 		for (int j = 0; j <= sectors; ++j) {
-			sector_angle = j * sector_step; // starting from 0 to 2pi
+			sectorAngle = j * sectorStep; // starting from 0 to 2pi
 
 			// vertex position (x, y, z)
-			x = xy * cos/*f*/(sector_angle);    // r * cos(u) * cos(v)
-			y = xy * sin/*f*/(sector_angle);    // r * cos(u) * sin(v)
-			vertices[count] = create_vertex(x, y, z);
+			x = xy * cos/*f*/(sectorAngle);    // r * cos(u) * cos(v)
+			y = xy * sin/*f*/(sectorAngle);    // r * cos(u) * sin(v)
+			vertices[count] = o.createVertex(x, y, z);
 
 			// normalized vertex normal (nx, ny, nz)
-			nx = x * length_inv;
-			ny = y * length_inv;
-			nz = z * length_inv;
+			nx = x * lengthInv;
+			ny = y * lengthInv;
+			nz = z * lengthInv;
 			// set_normal(vertices[count], nx, ny, nz);
 
 			count++;
@@ -384,346 +239,35 @@ void create_sphere(object *o, int sectors, int stacks, float radius)
 
 		for (int j = 0; j < sectors; ++j, ++k1, ++k2) {
 			if (i != 0) {
-				face *f = create_face(3, vertices[k1], vertices[k2], vertices[k1 + 1]);
-				add_face_to_object(o, f);
-				compute_normal(f);
+				_face *f = o.createFace(3, vertices[k1], vertices[k2], vertices[k1 + 1]);
+				o.addFace(f);
+				o.computeNormal(f);
 			}
 
 			// k1+1 => k2 => k2+1
 			if (i != (stacks - 1)) {
-				face *f = create_face(3, vertices[k1 + 1], vertices[k2], vertices[k2 + 1]);
-				add_face_to_object(o, f);
-				compute_normal(f);
+				_face *f = o.createFace(3, vertices[k1 + 1], vertices[k2], vertices[k2 + 1]);
+				o.addFace(f);
+				o.computeNormal(f);
 			}
 		}
 	}
-	update_vertices_list(o);
 }
 
 
 light *create_light(float x, float y, float z, color c, float i)
 {
-	light *l = (light *) malloc(sizeof(light));
-
-	l->pos[0] = (float) x;
-	l->pos[1] = (float) y;
-	l->pos[2] = (float) z;
-	l->intensity = i;
-	l->c = c;
+	light *l = (light *)malloc(sizeof(light));
+	if (l) {
+		l->pos[0] = (float)x;
+		l->pos[1] = (float)y;
+		l->pos[2] = (float)z;
+		l->intensity = i;
+		l->c = c;
+	}
 	return l;
+
 }
-
-
-void create_obj(object *o, char *filename)
-{
-	FILE *filePointer;
-	// int bufferLength = 1024;
-	char buffer[MILLEVINGTQUATRE];
-	char header[MILLEVINGTQUATRE];
-	int vertices_count = 0;
-	int normals_count = 0;
-	int i = 0;
-
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("v", header) == 0)
-			vertices_count++;
-		if (strcmp("vn", header) == 0)
-			normals_count++;
-	}
-	fclose(filePointer);
-
-	printf("vertices count :%d\n", vertices_count);
-	vertex **vertex_list = (vertex **) malloc(sizeof(vertex *) * vertices_count);
-
-	printf("normals count :%d\n", normals_count);
-	float **normals_list = (float **) malloc(sizeof(float *) * normals_count);
-
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("v", header) == 0) {
-			float x, y, z;
-			sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-			// printf("v %f %f %f\n", x, y, z);
-			vertex *v = create_vertex(x, y, z);
-			vertex_list[i] = v;
-			i++;
-		}
-	}
-	fclose(filePointer);
-
-	i = 0;
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("vn", header) == 0) {
-			float x, y, z;
-			sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-			printf("vn %f %f %f\n", x, y, z);
-			float *n = (float *) malloc(sizeof(float) * 3);
-			n[0] = x;
-			n[1] = y;
-			n[2] = z;
-			normals_list[i] = n;
-			i++;
-		}
-	}
-	fclose(filePointer);
-
-	filePointer = fopen(filename, "r");
-	int face_indexes[10];
-	int normal_indexes[10];
-	int k;
-
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("f", header) == 0) {
-			i = 0;
-			k = 0;
-			char *token;
-			const char s[2] = " ";
-			token = strtok(buffer, s);
-			while (token != NULL) {
-				if (i > 0) {
-					printf("token %d %s\n", i, token);
-					int i, j;
-					sscanf(token, "%d//%d", &i, &j);
-					printf("   %d %d\n", i, j);
-					face_indexes[k] = i;
-					normal_indexes[k] = j;
-					k++;
-				}
-				token = strtok(NULL, s);
-				i++;
-			}
-			// printf("k %d\n", k);
-			face *f = create_face(0);
-			for (i = 0; i < k; i++) {
-				// printf("face_indexes[%d]=%d\n", i, face_indexes[i]);
-				vertex *v = create_vertex(vertex_list[face_indexes[i] - 1]->pos[0],
-					vertex_list[face_indexes[i] - 1]->pos[1],
-					vertex_list[face_indexes[i] - 1]->pos[2]);
-				// print_vertex(v);
-				add_vertex_to_face(f, v);
-				// printf("normal_indexes[%d]=%d\n", i, normal_indexes[i]);
-				set_normal(v, normals_list[normal_indexes[i] - 1][0],
-					normals_list[normal_indexes[i] - 1][1],
-					normals_list[normal_indexes[i] - 1][2]);
-				//  print_vec3(v->normal);
-			}
-			// printf("len %d\n", f->length);
-			add_face_to_object(o, f);
-		}
-	}
-	fclose(filePointer);
-
-
-	free(vertex_list);
-	for (int i = 0; i < normals_count; i++)
-		free(normals_list[i]);
-	free(normals_list);
-
-	update_vertices_list(o);
-}
-
-
-void cut(char *src, int start, int end, char *target)
-{
-	int k = 0;
-
-	for (int i = start; i < end; i++) {
-		target[k] = src[i];
-		k++;
-	}
-	target[k] = '\0';
-}
-
-void split(char *string, char sep, char token_array[][50])
-{
-	// Decoupe en 10 tokens max de 50 cars
-	int sep_count = 0;
-	int idx1 = 0, idx2 = 0;
-	char token[50];
-	char *first_car = string;
-
-	while (*string) {
-		if (sep == *string) {
-			cut(first_car, idx1, idx2, token);
-			strcpy(token_array[sep_count], token);
-			idx1 = idx2 + 1;
-			sep_count++;
-		}
-
-		string++;
-		idx2++;
-	}
-	cut(first_car, idx1, idx2, token);
-	strcpy(token_array[sep_count], token);
-}
-
-
-void create_object_from_obj_file(object *o, char *filename)
-{
-	FILE *filePointer;
-	// int bufferLength = 1024;
-	char buffer[MILLEVINGTQUATRE];
-	char header[MILLEVINGTQUATRE];
-	int vertices_count = 0;
-	int normals_count = 0;
-	int uv_count = 0;
-	int i = 0;
-
-
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("v", header) == 0)
-			vertices_count++;
-		if (strcmp("vn", header) == 0)
-			normals_count++;
-		if (strcmp("vt", header) == 0)
-			uv_count++;
-	}
-	fclose(filePointer);
-
-
-	printf("vertices count :%d\n", vertices_count);
-	vertex **vertex_list = (vertex **) malloc(sizeof(vertex *) * vertices_count);
-
-	printf("normals count :%d\n", normals_count);
-	float **normals_list = (float **) malloc(sizeof(float *) * normals_count);
-
-	printf("uv count :%d\n", uv_count);
-	float **uv_list = (float **) malloc(sizeof(float *) * uv_count);
-
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("v", header) == 0) {
-			float x, y, z;
-			sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-			vertex *v = create_vertex(x, y, z);
-			vertex_list[i] = v;
-			i++;
-		}
-	}
-	fclose(filePointer);
-
-
-	i = 0;
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("vn", header) == 0) {
-			float x, y, z;
-			sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-			// printf("vn %f %f %f\n", x, y, z);
-			float *n = (float *) malloc(sizeof(float) * 3);
-			n[0] = x;
-			n[1] = y;
-			n[2] = z;
-			normals_list[i] = n;
-			i++;
-		}
-	}
-	fclose(filePointer);
-
-	i = 0;
-	filePointer = fopen(filename, "r");
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("vt", header) == 0) {
-			float u, v;
-			sscanf(buffer, "%s %f %f", header, &u, &v);
-			// printf("vn %f %f %f\n", x, y, z);
-			float *t = (float *) malloc(sizeof(float) * 2);
-			t[0] = u;
-			t[1] = v;
-			uv_list[i] = t;
-			i++;
-		}
-	}
-	fclose(filePointer);
-
-
-	filePointer = fopen(filename, "r");
-	int face_indexes[10];
-	int normal_indexes[10];
-	int uv_indexes[10];
-	char token_array[3][50];
-
-	int k;
-
-	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-		sscanf(buffer, "%s ", header);
-		if (strcmp("f", header) == 0) {
-			i = 0;
-			k = 0;
-			char *token;
-			const char s[2] = " ";
-			token = strtok(buffer, s);
-			while (token != NULL) {
-				if (i > 0) {
-					split(token, '/', token_array);
-					int face_index, normal_index, uv_index;
-
-					sscanf(token_array[0], "%d", &face_index);
-					if (strlen(token_array[1]) > 0)
-						sscanf(token_array[1], "%d", &uv_index);
-					else
-						uv_index = 0;
-					sscanf(token_array[2], "%d", &normal_index);
-
-					face_indexes[k] = face_index;
-					normal_indexes[k] = normal_index;
-					uv_indexes[k] = uv_index;
-
-					k++;
-				}
-				token = strtok(NULL, s);
-				i++;
-			}
-
-
-			face *f = create_face(0);
-			for (i = 0; i < k; i++) {
-				// printf("face_indexes[%d]=%d\n", i, face_indexes[i]);
-				vertex *v = create_vertex(vertex_list[face_indexes[i] - 1]->pos[0],
-					vertex_list[face_indexes[i] - 1]->pos[1],
-					vertex_list[face_indexes[i] - 1]->pos[2]);
-				// print_vertex(v);
-				add_vertex_to_face(f, v);
-				// printf("normal_indexes[%d]=%d\n", i, normal_indexes[i]);
-				set_normal(v, normals_list[normal_indexes[i] - 1][0],
-					normals_list[normal_indexes[i] - 1][1],
-					normals_list[normal_indexes[i] - 1][2]);
-
-				if (uv_indexes[i] - 1 > 0) {
-					//                     set_uv(v, 1.0 * uv_list[uv_indexes[i] - 1][0],
-					//                         1.0 * uv_list[uv_indexes[i] - 1][1]);
-				}
-				else {
-					//                     set_uv(v, 1.0, 1.0);
-				}
-				//  print_vec3(v->normal);
-			}
-			// printf("len %d\n", f->length);
-			add_face_to_object(o, f);
-		}
-	}
-	fclose(filePointer);
-
-
-	free(vertex_list);
-	for (int i = 0; i < normals_count; i++)
-		free(normals_list[i]);
-	free(normals_list);
-
-	update_vertices_list(o);
-}
-
 
 void reflect(vec &out, vec &incident, vec &normal)
 {
@@ -734,13 +278,16 @@ void reflect(vec &out, vec &incident, vec &normal)
 	out.normalize3();
 }
 
-void renderObject(light *l, object *o, mat view, mat perspective, vec from, int w, int h, int onlyVertices)
+void renderObject(light *l, Obj &o, mat view, mat perspective, vec from, int w, int h, int onlyVertices)
 {
-	for (int i = 0; i < o->length; i++) {
-		face *f = o->faces[i];
-		Fx::Vertex *vertices = new Fx::Vertex[f->length];
-		for (int j = 0; j < f->length; j++) {
-			vertex *v = f->vertices[j];
+	startLap();
+	for (size_t i = 0; i < o.o.faces.size(); i++) {
+		_face *f = o.o.faces[i];
+		int sz = f->vertices.size();
+		Fx::Vertex *vertices = new Fx::Vertex[sz];
+		
+		for (int j = 0; j < sz; j++) {
+			_vertex *v = f->vertices[j];
 			vec worldPos = getVertexAsVector(v);
 			vec worldNorm = getVertexNormalsAsVector(v);
 
@@ -791,21 +338,38 @@ void renderObject(light *l, object *o, mat view, mat perspective, vec from, int 
 			int g = (int)MIN(255, MAX(1, c[1]));
 			int b = (int)MIN(255, MAX(2, c[2]));
 			vertices[j].argb = (FxU32)0 | (FxU32)r << 16 | (FxU32)g << 8 | (FxU32)b;
-			
+
 			delete _diffuseLightColor;
 			delete _ambient;
 			delete _negLightDir;
 			delete _reflectDir;
 			delete _specular;
 		}
+		
 
 		// 3DFX polygon drawing here /////////
 		grCullMode(GR_CULL_NEGATIVE);
-		grDrawVertexArrayContiguous(GR_POLYGON, f->length, vertices, sizeof(Fx::Vertex));
+		grDrawVertexArrayContiguous(GR_POLYGON, f->vertices.size(), vertices, sizeof(Fx::Vertex));
 
 		delete[] vertices;
 	}
+	endLap("render");
 }
+
+void startLap()
+{
+	beginTime = std::chrono::steady_clock::now();
+}
+
+
+void endLap(std::string desc)
+{
+	endTime = std::chrono::steady_clock::now();
+	std::ofstream out("3d.log", std::ios_base::app);
+	out << "Time " << desc << " = " << std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count() << " units" << std::endl;
+}
+
+
 
 //void render_vertices(vertex **vertices, int length, float *camera, float *projection, int w, int h)
 //{

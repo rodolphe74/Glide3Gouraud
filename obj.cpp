@@ -63,6 +63,8 @@ Obj::Obj(const char *filename)
 	int uv_count = 0;
 	int i = 0;
 
+	o.color = _white;
+
 	filePointer = fopen(filename, "r");
 	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
 		memset(header, 0, sizeof(header));
