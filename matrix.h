@@ -177,8 +177,15 @@ public:
 	}
 
 	void add(Matrix &w);
-	void matMul(Matrix &w);
-	void matMulMmx(Matrix &w);
+	void matMulMat(Matrix &w);
+	void matMulMatMmx(Matrix &w);
+	void vecAddVec(Matrix &w);
+	void vecMulVec(Matrix &w);
+	void vec4MulMat4(Matrix &w);
+
+	void vec3CrossVec3(Matrix &w);
+	void vec3Normalize();
+	REAL vec3DotReal(Matrix &w);
 
 	friend std::ostream &operator<<(std::ostream &os, const Matrix &m);
 };

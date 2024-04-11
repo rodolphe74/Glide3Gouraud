@@ -21,6 +21,7 @@
 #include <fstream>
 
 #include "matrix.h"
+#include "mat.h"
 
 Obj *o;
 light *lg;
@@ -36,77 +37,150 @@ mat perspective(4, 4);
 int Start(HWND hwin)
 {
 	// DEBUG
-	//Matrix m(VTYPE::VEC3);
-	//m.vecSetAt(0, 1);
-	//m.vecSetAt(1, 2);
-	//m.vecSetAt(2, 3);
-	//std::ofstream out("matrix.log", std::ios_base::app);
-	//out << m << std::endl;
-	//m.setType(VTYPE::MAT4);
-	//m.matSetAt(0, 0, 1);
-	//m.matSetAt(1, 0, 2);
-	//m.matSetAt(2, 0, 3);
-	//m.matSetAt(3, 0, 4);
-	//m.matSetAt(0, 1, 5);
-	//m.matSetAt(1, 1, 6);
-	//m.matSetAt(2, 1, 7);
-	//m.matSetAt(3, 1, 8);
-	//m.matSetAt(0, 2, 9);
-	//m.matSetAt(1, 2, 10);
-	//m.matSetAt(2, 2, 11);
-	//m.matSetAt(3, 2, 12);
-	//m.matSetAt(0, 3, 13);
-	//m.matSetAt(1, 3, 14);
-	//m.matSetAt(2, 3, 15);
-	//m.matSetAt(3, 3, 16);
-	//out << m << std::endl;
+	Matrix m(VTYPE::VEC3);
+	m.vecSetAt(0, 1);
+	m.vecSetAt(1, 2);
+	m.vecSetAt(2, 3);
+	std::ofstream out("matrix.log", std::ios_base::app);
+	out << m << std::endl;
+	m.setType(VTYPE::MAT4);
+	m.matSetAt(0, 0, 1);
+	m.matSetAt(1, 0, 2);
+	m.matSetAt(2, 0, 3);
+	m.matSetAt(3, 0, 4);
+	m.matSetAt(0, 1, 5);
+	m.matSetAt(1, 1, 6);
+	m.matSetAt(2, 1, 7);
+	m.matSetAt(3, 1, 8);
+	m.matSetAt(0, 2, 9);
+	m.matSetAt(1, 2, 10);
+	m.matSetAt(2, 2, 11);
+	m.matSetAt(3, 2, 12);
+	m.matSetAt(0, 3, 13);
+	m.matSetAt(1, 3, 14);
+	m.matSetAt(2, 3, 15);
+	m.matSetAt(3, 3, 16);
+	out << m << std::endl;
 
 
-	//Matrix n(VTYPE::VEC4);
-	//n.vecSetAt(0, 1);
-	//n.vecSetAt(1, 2);
-	//n.vecSetAt(2, 3);
-	//n.vecSetAt(3, 4);
-	//// n.matMul(m);
-	//out << m << std::endl;
-	//out << n << std::endl;
-	//n.matMul(m);
-	//out << n << std::endl;
+	Matrix n(VTYPE::VEC4);
+	n.vecSetAt(0, 1);
+	n.vecSetAt(1, 2);
+	n.vecSetAt(2, 3);
+	n.vecSetAt(3, 4);
+	// n.matMulMat(m);
+	out << m << std::endl;
+	out << n << std::endl;
+	n.matMulMat(m);
+	out << n << std::endl;
 
 
-	//Matrix p({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, VTYPE::MAT3);
-	//Matrix q({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, VTYPE::MAT3);
-	//out << p << std::endl;
-	//out << q << std::endl;
+	Matrix p({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, VTYPE::MAT3);
+	Matrix q({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, VTYPE::MAT3);
+	out << p << std::endl;
+	out << q << std::endl;
 
-	//Matrix r(VTYPE::MAT3);
-	//startLap();
-	//for (int i = 0; i < 1000000; i++) {
-	//	r.copy(p);
-	//	r.matMul(q);
-	//}
-	//endLap("mul");
-	//out << r << std::endl;
+	Matrix r(VTYPE::MAT3);
+	startLap();
+	for (int i = 0; i < 1000000; i++) {
+		r.copy(p);
+		r.matMulMat(q);
+	}
+	endLap("mul");
+	out << r << std::endl;
 
-	//startLap();
-	//q.storeTransposed();	// allow faster column slices retrieval
-	//for (int i = 0; i < 1000000; i++) {
-	//	r.copy(p);
-	//	r.matMulMmx(q);
-	//}
-	//endLap("mulmmx");
-	//out << r << std::endl;
+	startLap();
+	q.storeTransposed();	// allow faster column slices retrieval
+	for (int i = 0; i < 1000000; i++) {
+		r.copy(p);
+		r.matMulMatMmx(q);
+	}
+	endLap("mulmmx");
+	out << r << std::endl;
 
-	//Matrix s({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
-	//Matrix t({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, MAT3);
-	//s.matMul(t);
-	//out << s << std::endl;
-	//Matrix u({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
-	//t.storeTransposed();
-	//u.matMulMmx(t);
-	//out << u << std::endl;
+	Matrix s({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
+	Matrix t({ 10, 11, 12, 13, 14, 15, 16, 17, 18 }, MAT3);
+	s.matMulMat(t);
+	out << s << std::endl;
+	Matrix u({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, MAT3);
+	t.storeTransposed();
+	u.matMulMatMmx(t);
+	out << u << std::endl;
 
-	//exit(1);
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		vec v({ 1, 2, 3 });
+		vec w({ 4, 5, 6 });
+	}
+	endLap("cross-1");
+	//out << v.cross3(w) << std::endl;
+	
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		Matrix vv({ 1, 2, 3 }, VEC3);
+		Matrix ww({ 4, 5, 6 }, VEC3);
+		vv.vec3CrossVec3(ww);
+	}
+	endLap("cross-2");
+	//out << vv << std::endl;
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		vec v({ 1, 2, 3 });
+		v.normalize3();
+		//out << v << std::endl;
+	}
+	endLap("normalize-1");
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		Matrix vv({ 1, 2, 3 }, VEC3);
+		vv.vec3Normalize();
+		//out << vv << std::endl;
+	}
+	endLap("normalize-2");
+
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		vec v({ 1, 2, 3 });
+		vec w({ 4, 5, 6 });
+		float f = v.dot3(w);
+		//out << f << std::endl;
+	}
+	endLap("normalize-1");
+
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		Matrix vv({ 1, 2, 3 }, VEC3);
+		Matrix ww({ 4, 5, 6 }, VEC3);
+		float f = vv.vec3DotReal(ww);
+		//out << f << std::endl;
+	}
+	endLap("normalize-2");
+
+	startLap();
+	for (int i = 0; i < 100000; i++) {
+		mat tt({ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 });
+		vec uu({ 1,2,3,4 });
+		uu.multMat4(tt);
+		//out << "+++" << uu << std::endl;
+	}
+	endLap("*");
+
+	startLap();
+	for (int i = 0; i < 100000; i++) {
+		Matrix tt({ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }, MAT4);
+		Matrix uu({ 1,2,3,4 }, VEC4);
+		uu.vec4MulMat4(tt);
+		//out << "---"  << uu << std::endl;
+	}
+	endLap("*");
+
+
+	exit(1);
 	////////
 
 
