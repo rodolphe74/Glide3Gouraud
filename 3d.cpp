@@ -13,12 +13,10 @@
 #include <iostream>
 
 
-#define CETTE_CONSTANTE_JUSTE_POUR_AVOIR_UN_Z_BUFFER_POSITIF 32
 #define MILLEVINGTQUATRE 1024
 
 static std::chrono::steady_clock::time_point beginTime;
 static std::chrono::steady_clock::time_point endTime;
-
 
 // Bronze
 float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
@@ -332,7 +330,7 @@ void renderObject(light *l, Obj &o, mat view, mat perspective, vec from, int w, 
 			// Feed 3DFX polygon /////////
 			vertices[j].x = (FxFloat)MIN(w - 1, (cameraPosVec[0] + 1) * 0.5 * w);
 			vertices[j].y = (FxFloat)MIN(h - 1, (cameraPosVec[1] + 1) * 0.5 * h);
-			vertices[j].z = (FxFloat)(cameraPosVec[2] + CETTE_CONSTANTE_JUSTE_POUR_AVOIR_UN_Z_BUFFER_POSITIF);
+			vertices[j].z = (FxFloat)MIN(65535, (cameraPosVec[2] + 1) * 0.5 * 65536);
 
 			int r = (int)MIN(255, MAX(0, c[0]));
 			int g = (int)MIN(255, MAX(1, c[1]));

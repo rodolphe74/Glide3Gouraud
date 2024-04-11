@@ -116,7 +116,7 @@ int Start(HWND hwin)
 	color c = { 255, 255, 255 };
 	lg = create_light(0.0f, 0.0f, 8.0f, c, 255.0f);
 
-	o = new Obj("./donkey.obj");
+	o = new Obj("./Donkey.obj");
 
 	// Init Glide
 	grGlideInit();
@@ -133,13 +133,11 @@ int Start(HWND hwin)
 		1);
 
 	// Tell glide were to find the coordinates and the colors
-	//grVertexLayout(GR_PARAM_XY, 0, GR_PARAM_ENABLE);
-	//grVertexLayout(GR_PARAM_PARGB, 8, GR_PARAM_ENABLE);
-
 	grCoordinateSpace(GR_WINDOW_COORDS);
 	grVertexLayout(GR_PARAM_XY, 0, GR_PARAM_ENABLE);
 	grVertexLayout(GR_PARAM_Z, 8, GR_PARAM_ENABLE);
 	grVertexLayout(GR_PARAM_PARGB, 12, GR_PARAM_ENABLE);
+	
 
 	// Use LOCAL, CONSTANT color
 	grColorCombine(GR_COMBINE_FUNCTION_LOCAL,
