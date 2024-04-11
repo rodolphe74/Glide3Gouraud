@@ -83,16 +83,6 @@ void Matrix::vecMulVec(Matrix &w)
 
 void Matrix::vec4MulMat4(Matrix &w)
 {
-    //float x = data[0];
-    //float y = data[1];
-    //float z = data[2];
-    //float w = data[3];
-
-    //data[0] = other.getData()[0] * x + other.getData()[4] * y + other.getData()[8] * z + other.getData()[12] * w;
-    //data[1] = other.getData()[1] * x + other.getData()[5] * y + other.getData()[9] * z + other.getData()[13] * w;
-    //data[2] = other.getData()[2] * x + other.getData()[6] * y + other.getData()[10] * z + other.getData()[14] * w;
-    //data[3] = other.getData()[3] * x + other.getData()[7] * y + other.getData()[11] * z + other.getData()[15] * w;
-
     w.retain();
     *(v) = *(w.v) * *(w.x) + *(w.v + 4) * *(w.x + 1) + *(w.v + 8) * *(w.x + 2) + *(w.v + 12) * *(w.x + 3);
     *(v + 1) = *(w.v + 1) * *(w.x) + *(w.v + 5) * *(w.x + 1) + *(w.v + 9) * *(w.x + 2) + *(w.v + 13) * *(w.x + 3);
