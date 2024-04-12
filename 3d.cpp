@@ -46,123 +46,147 @@ int shininess = 52;
 //float specularStrength = 1.0f;
 //int shininess = 150;
 
-void _lookAt(vec &position, vec &target, vec &up, mat &mat)
+void __lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
 {
 	// https://github.com/felselva/mathc
-	vec forward{ 0, 0, 0 };
-	forward = target - position;
-	forward.normalize3();
+	Matrix forward({ target.v[0], target.v[1], target.v[2] }, VEC3);
+	forward.vecSubVec(position);
+	forward.vec3Normalize();
 
-	vec side = forward.cross3(up);
-	side.normalize3();
+	Matrix side(VEC3);
+	side.copy(forward);
+	side.vec3CrossVec3(up);
+	side.vec3Normalize();
 
-	mat = {
-		{side[0], up[0], -forward[0], 0.0f},
-		{side[1], up[1], -forward[1], 0.0f},
-		{side[2], up[2], -forward[2], 0.0f},
-		{-side.dot3(position), -up.dot3(position), forward.dot3(position), 1.0f}
-	};
+	mat.matSetAt(0, 0, side.v[0]);
+	mat.matSetAt(0, 1, side.v[1]);
+	mat.matSetAt(0, 2, side.v[2]);
+	mat.matSetAt(0, 3, -side.vec3DotReal(position));
 
+	mat.matSetAt(1, 0, up.v[0]);
+	mat.matSetAt(1, 1, up.v[1]);
+	mat.matSetAt(1, 2, up.v[2]);
+	mat.matSetAt(1, 3, -up.vec3DotReal(position));
+
+	mat.matSetAt(2, 0, -forward.v[0]);
+	mat.matSetAt(2, 1, -forward.v[1]);
+	mat.matSetAt(2, 2, -forward.v[2]);
+	mat.matSetAt(2, 3, forward.vec3DotReal(position));
+
+	mat.matSetAt(3, 0, 0.0f);
+	mat.matSetAt(3, 1, 0.0f);
+	mat.matSetAt(3, 2, 0.0f);
+	mat.matSetAt(3, 3, 1.0f);
 }
 
-void _perspective(float fov_y, float aspect, float n, float f, mat &mat)
+void __perspective(float fov_y, float aspect, float n, float f, Matrix &mat)
 {
 	// https://github.com/felselva/mathc
 	float tan_half_fov_y = (float)(1.0f / std::tan(fov_y * 0.5f));
 
-	mat = {
-		{1.0f / aspect * tan_half_fov_y, 0.0f, 0.0f, 0.0f},
-		{0.0f, 1.0f / tan_half_fov_y, 0.0f, 0.0f},
-		{0.0f, 0.0f, f / (n - f), -1.0f},
-		{0.0f, 0.0f, -(f * n) / (f - n), 0.0f}
-	};
+	mat.matSetAt(0, 0, 1.0f / aspect * tan_half_fov_y);
+	mat.matSetAt(0, 1, 0.0f);
+	mat.matSetAt(0, 2, 0.0f);
+	mat.matSetAt(0, 3, 0.0f);
+
+	mat.matSetAt(1, 0, 0.0f);
+	mat.matSetAt(1, 1, 1.0f / tan_half_fov_y);
+	mat.matSetAt(1, 2, 0.0f);
+	mat.matSetAt(1, 3, 0.0f);
+
+	mat.matSetAt(2, 0, 0.0f);
+	mat.matSetAt(2, 1, 0.0f);
+	mat.matSetAt(2, 2, f / (n - f));
+	mat.matSetAt(2, 3, -(f * n) / (f - n));
+
+	mat.matSetAt(3, 0, 0.0f);
+	mat.matSetAt(3, 1, 0.0f);
+	mat.matSetAt(3, 2, -1.0f);
+	mat.matSetAt(3, 3, 0.0f);
 }
 
-vec getVertexAsVector(_vertex *v)
+void __rotationX(REAL angle, Matrix &mat)
 {
-	vec vc(3);
-	vc[0] = v->pos[0];
-	vc[1] = v->pos[1];
-	vc[2] = v->pos[2];
-	return vc;
+	float cs = std::cos(angle);
+	float sn = std::sin(angle);
+	mat.clear();
+	mat.v[0] = 1;
+	mat.v[5] = cs;
+	mat.v[6] = -sn;
+	mat.v[9] = sn;
+	mat.v[10] = cs;
+	mat.v[15] = 1;
 }
 
-vec getVertexNormalsAsVector(_vertex *v)
+void __rotationY(REAL angle, Matrix &mat)
 {
-	vec vc(3);
-	vc[0] = v->normal[0];
-	vc[1] = v->normal[1];
-	vc[2] = v->normal[2];
-	return vc;
+	float cs = std::cos(angle);
+	float sn = std::sin(angle);
+	mat.clear();
+	mat.v[0] = cs;
+	mat.v[2] = sn;
+	mat.v[5] = 1;
+	mat.v[8] = -sn;
+	mat.v[10] = cs;
+	mat.v[15] = 1;
 }
 
-vec getLightPos(light *l)
+void __rotationZ(REAL angle, Matrix &mat)
 {
-	vec vc(3);
-	vc[0] = l->pos[0];
-	vc[1] = l->pos[1];
-	vc[2] = l->pos[2];
-	return vc;
+	float cs = std::cos(angle);
+	float sn = std::sin(angle);
+	mat.clear();
+	mat.v[0] = cs;
+	mat.v[1] = -sn;
+	mat.v[4] = sn;
+	mat.v[5] = cs;
+	mat.v[10] = 1;
+	mat.v[15] = 1;
 }
 
-vec getLightColor(light *l)
+void __translateObject(Obj &o, Matrix &m)
 {
-	vec vc(3);
-	vc[0] = l->c.r;
-	vc[1] = l->c.g;
-	vc[2] = l->c.b;
-	return vc;
-}
-
-vec getObjectColor(Obj &o)
-{
-	vec vc(3);
-	vc[0] = o.o.color.r;
-	vc[1] = o.o.color.g;
-	vc[2] = o.o.color.b;
-	return vc;
-}
-
-vec getObjectColor(object *o)
-{
-	vec vc(3);
-	vc[0] = o->color.r;
-	vc[1] = o->color.g;
-	vc[2] = o->color.b;
-	return vc;
-}
-
-void translateObject(Obj &o, vec &v)
-{
+	Matrix vx(VEC3);
+	Matrix vn(VEC3);
 	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
-		_vertex *vx = o.o.verticesList[i];
-		vec vcx = getVertexAsVector(vx);
-		vcx.mult3(v);
-		vx->pos[0] = vcx[0];
-		vx->pos[1] = vcx[1];
-		vx->pos[2] = vcx[2];
-		vec vcn = getVertexNormalsAsVector(vx);
-		vcn.mult3(v);
-		vx->normal[0] = vcn[0];
-		vx->normal[1] = vcn[1];
-		vx->normal[2] = vcn[2];
+		_vertex *vertex = o.o.verticesList[i];
+		vx.v[0] = vertex->pos[0];
+		vx.v[1] = vertex->pos[1];
+		vx.v[2] = vertex->pos[2];
+		vx.vec4MulMat4(m);
+		vertex->pos[0] = vx.v[0];
+		vertex->pos[1] = vx.v[1];
+		vertex->pos[2] = vx.v[2];
+		vn.v[0] = vertex->normal[0];
+		vn.v[1] = vertex->normal[1];
+		vn.v[2] = vertex->normal[2];
+		vn.vec4MulMat4(m);
+		vertex->normal[0] = vn.v[0];
+		vertex->normal[1] = vn.v[1];
+		vertex->normal[2] = vn.v[2];
 	}
 }
 
-void transformObject(Obj &o, mat &m)
+void __transformObject(Obj &o, Matrix &m)
 {
+	Matrix vx(VEC4);
+	Matrix vn(VEC4);
 	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
-		_vertex *vx = o.o.verticesList[i];
-		vec vcx = getVertexAsVector(vx);
-		vcx.multMat4(m);
-		vx->pos[0] = vcx[0];
-		vx->pos[1] = vcx[1];
-		vx->pos[2] = vcx[2];
-		vec vcn = getVertexNormalsAsVector(vx);
-		vcn.multMat4(m);
-		vx->normal[0] = vcn[0];
-		vx->normal[1] = vcn[1];
-		vx->normal[2] = vcn[2];
+		_vertex *vertex = o.o.verticesList[i];
+		vx.v[0] = vertex->pos[0];
+		vx.v[1] = vertex->pos[1];
+		vx.v[2] = vertex->pos[2];
+		vx.vec4MulMat4(m);
+		vertex->pos[0] = vx.v[0];
+		vertex->pos[1] = vx.v[1];
+		vertex->pos[2] = vx.v[2];
+		vn.v[0] = vertex->normal[0];
+		vn.v[1] = vertex->normal[1];
+		vn.v[2] = vertex->normal[2];
+		vn.vec4MulMat4(m);
+		vertex->normal[0] = vn.v[0];
+		vertex->normal[1] = vn.v[1];
+		vertex->normal[2] = vn.v[2];
 	}
 }
 
@@ -204,7 +228,7 @@ void createSphere(Obj &o, int sectors, int stacks, float radius)
 		xy = radius * cos/*f*/(stackAngle);                // r * cos(u)
 		z = radius * sin/*f*/(stackAngle);                 // r * sin(u)
 
-		// add (sectorCount+1) vertices per stack
+		// matAddMat (sectorCount+1) vertices per stack
 		// the first and last vertices have same position and normal, but different tex coords
 		for (int j = 0; j <= sectors; ++j) {
 			sectorAngle = j * sectorStep; // starting from 0 to 2pi
@@ -267,83 +291,117 @@ light *create_light(float x, float y, float z, color c, float i)
 
 }
 
-void reflect(vec &out, vec &incident, vec &normal)
+
+void __reflect(Matrix &out, Matrix &incident, Matrix &normal)
 {
-	float dot = incident.dot3(normal);
-	normal = normal * dot;
-	normal = normal * 2;
-	out = incident - normal;
-	out.normalize3();
+	float dot = incident.vec3DotReal(normal);
+	normal.vecMulScalar(2 * dot);
+	out.copy(incident);
+	out.vecSubVec(normal);
+	out.vec3Normalize();
 }
 
-void renderObject(light *l, Obj &o, mat view, mat perspective, vec from, int w, int h, int onlyVertices)
+
+void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices)
 {
-	startLap();
+	//startLap();
+	Matrix worldPos(VEC3);
+	Matrix worldNorm(VEC3);
+	Matrix lightDir(VEC3);
+	Matrix viewDir(VEC3);
+	Matrix negLightDir(VEC3);
+	Matrix reflectDir(VEC3);
+	Matrix specular(VEC3);
+	Matrix lightColor(VEC3);
+	Matrix objectColor(VEC3);
+	Matrix c(VEC3);
+	Matrix diffuseLightColorV(VEC3);
+	Matrix ambientDiffuseSpecular(VEC3);
+	Matrix cameraPos(VEC4);
+
+	lightColor.v[0] = l->c.r;
+	lightColor.v[1] = l->c.g;
+	lightColor.v[2] = l->c.b;
+
+	objectColor.v[0] = o.o.color.r;
+	objectColor.v[1] = o.o.color.g;
+	objectColor.v[2] = o.o.color.b;
+
 	for (size_t i = 0; i < o.o.faces.size(); i++) {
 		_face *f = o.o.faces[i];
 		int sz = f->vertices.size();
 		Fx::Vertex *vertices = new Fx::Vertex[sz];
-		
+
 		for (int j = 0; j < sz; j++) {
 			_vertex *v = f->vertices[j];
-			vec worldPos = getVertexAsVector(v);
-			vec worldNorm = getVertexNormalsAsVector(v);
+			worldPos.v[0] = v->pos[0];
+			worldPos.v[1] = v->pos[1];
+			worldPos.v[2] = v->pos[2];
+			worldNorm.v[0] = v->normal[0];
+			worldNorm.v[1] = v->normal[1];
+			worldNorm.v[2] = v->normal[2];
 
 			// Gouraud ////////////
-			worldNorm.normalize3();
-			vec lightPos = getLightPos(l);
-			vec lightDir = (lightPos - worldPos).asVec();
-			lightDir.normalize3();
-			float diff = MAX(worldNorm.dot3(lightDir), 0);
-			vec *_diffuseLightColor = new vec({ diffuseLightColor[0], diffuseLightColor[1], diffuseLightColor[2] });
-			mat diffuse = *_diffuseLightColor * diff;
-			vec *_ambient = new vec({ ambient[0], ambient[1], ambient[2] });
-			vec ambientDiffuseSpecularVec = (*_ambient + diffuse).asVec();
+			worldNorm.vec3Normalize();
+			lightDir.v[0] = l->pos[0];
+			lightDir.v[1] = l->pos[1];
+			lightDir.v[2] = l->pos[2];
+			lightDir.vecSubVec(worldPos);
+			lightDir.vec3Normalize();
+
+			float diff = MAX(worldNorm.vec3DotReal(lightDir), 0);
+			diffuseLightColorV.v[0] = diffuseLightColor[0];
+			diffuseLightColorV.v[1] = diffuseLightColor[1];
+			diffuseLightColorV.v[2] = diffuseLightColor[2];
+			diffuseLightColorV.vecMulScalar(diff);
+			ambientDiffuseSpecular.v[0] = ambient[0];
+			ambientDiffuseSpecular.v[1] = ambient[1];
+			ambientDiffuseSpecular.v[2] = ambient[2];
+			ambientDiffuseSpecular.vecAddVec(diffuseLightColorV);
 
 			// Specular ///////////
-			vec viewDir = from;
-			viewDir = viewDir - worldPos;
-			viewDir.normalize3();
-			vec *_negLightDir = new vec({ -lightDir[0], -lightDir[1], -lightDir[2] });
-			vec *_reflectDir = new vec(3);
-			reflect(*_reflectDir, *_negLightDir, worldNorm);
-			float spec = (float)std::pow((float)MAX(viewDir.dot3(*_reflectDir), 0.0f), (float)shininess);
-			vec *_specular = new vec({ specularLightColor[0], specularLightColor[1], specularLightColor[2] });
-			*_specular = *_specular * spec;
-			*_specular = *_specular * specularStrength;
-			vec lightColorVec = getLightColor(l);
-			_specular->mult3(lightColorVec);
+			viewDir.v[0] = from.v[0];
+			viewDir.v[1] = from.v[1];
+			viewDir.v[2] = from.v[2];
+			viewDir.vecSubVec(worldPos);
+			viewDir.vec3Normalize();
+			negLightDir.v[0] = -lightDir.v[0];
+			negLightDir.v[1] = -lightDir.v[1];
+			negLightDir.v[2] = -lightDir.v[2];
+			reflectDir.clear();
+			__reflect(reflectDir, negLightDir, worldNorm);
+			float spec = (float)std::pow((float)MAX(viewDir.vec3DotReal(reflectDir), 0.0f), (float)shininess);
+			specular.v[0] = specularLightColor[0];
+			specular.v[1] = specularLightColor[1];
+			specular.v[2] = specularLightColor[2];
+			specular.vecMulScalar(spec * specularStrength);
+			specular.vecMulVec(lightColor);
 
 			// Melt lights with object color ///////////
-			vec objectColorVec = getObjectColor(o);
-			vec c(3);
-			ambientDiffuseSpecularVec.add3(*_specular);
-			ambientDiffuseSpecularVec.mult3(objectColorVec);
-			c = ambientDiffuseSpecularVec;
+			ambientDiffuseSpecular.vecAddVec(specular);
+			ambientDiffuseSpecular.vecMulVec(objectColor);
+			c.copy(ambientDiffuseSpecular);
 
 			// Projection /////////
-			vec cameraPosVec = { worldPos[0], worldPos[1], worldPos[2], 1 };
-			cameraPosVec.multMat4(view);
-			cameraPosVec.multMat4(perspective);
-			cameraPosVec = cameraPosVec * (1 / cameraPosVec[3]);
+			cameraPos.v[0] = worldPos.v[0];
+			cameraPos.v[1] = worldPos.v[1];
+			cameraPos.v[2] = worldPos.v[2];
+			cameraPos.v[3] = 1.0f;
+
+			cameraPos.vec4MulMat4(view);
+			cameraPos.vec4MulMat4(perspective);
+			cameraPos.vecMulScalar(1 / cameraPos.v[3]);
 
 			// Feed 3DFX polygon /////////
-			vertices[j].x = (FxFloat)MIN(w - 1, (cameraPosVec[0] + 1) * 0.5 * w);
-			vertices[j].y = (FxFloat)MIN(h - 1, (cameraPosVec[1] + 1) * 0.5 * h);
-			vertices[j].z = (FxFloat)MIN(65535, (cameraPosVec[2] + 1) * 0.5 * 65536);
+			vertices[j].x = (FxFloat)MIN(w - 1, (cameraPos.v[0] + 1) * 0.5 * w);
+			vertices[j].y = (FxFloat)MIN(h - 1, (cameraPos.v[1] + 1) * 0.5 * h);
+			vertices[j].z = (FxFloat)MIN(65535, (cameraPos.v[2] + 1) * 0.5 * 65536);
 
-			int r = (int)MIN(255, MAX(0, c[0]));
-			int g = (int)MIN(255, MAX(1, c[1]));
-			int b = (int)MIN(255, MAX(2, c[2]));
+			int r = (int)MIN(255, MAX(0, c.v[0]));
+			int g = (int)MIN(255, MAX(1, c.v[1]));
+			int b = (int)MIN(255, MAX(2, c.v[2]));
 			vertices[j].argb = (FxU32)0 | (FxU32)r << 16 | (FxU32)g << 8 | (FxU32)b;
-
-			delete _diffuseLightColor;
-			delete _ambient;
-			delete _negLightDir;
-			delete _reflectDir;
-			delete _specular;
 		}
-		
 
 		// 3DFX polygon drawing here /////////
 		grCullMode(GR_CULL_NEGATIVE);
@@ -351,7 +409,7 @@ void renderObject(light *l, Obj &o, mat view, mat perspective, vec from, int w, 
 
 		delete[] vertices;
 	}
-	endLap("render");
+	//endLap("render");
 }
 
 void startLap()

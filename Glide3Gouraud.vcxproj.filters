@@ -24,9 +24,6 @@
     <ClCompile Include="llist.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="mat.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="obj.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>

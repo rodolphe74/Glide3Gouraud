@@ -15,7 +15,7 @@ std::ostream &operator<<(std::ostream &os, const Matrix &m)
     return os;
 }
 
-void Matrix::add(Matrix &w)
+void Matrix::matAddMat(Matrix &w)
 {
     for (int y = 0; y < r; y++) {
         for (int x = 0; x < c; x++) {
@@ -23,6 +23,15 @@ void Matrix::add(Matrix &w)
         }
     }
 
+}
+
+void Matrix::matSubMat(Matrix &w)
+{
+    for (int y = 0; y < r; y++) {
+        for (int x = 0; x < c; x++) {
+            *(v + y * 4 + x) -= *(w.v + y * 4 + x);
+        }
+    }
 }
 
 void Matrix::matMulMat(Matrix &w)
@@ -74,6 +83,13 @@ void Matrix::vecAddVec(Matrix &w)
     }
 }
 
+void Matrix::vecSubVec(Matrix &w)
+{
+    for (int x = 0; x < c; x++) {
+        *(v + x) -= *(w.v + x);
+    }
+}
+
 void Matrix::vecMulVec(Matrix &w)
 {
     for (int x = 0; x < c; x++) {
@@ -83,11 +99,19 @@ void Matrix::vecMulVec(Matrix &w)
 
 void Matrix::vec4MulMat4(Matrix &w)
 {
-    w.retain();
-    *(v) = *(w.v) * *(w.x) + *(w.v + 4) * *(w.x + 1) + *(w.v + 8) * *(w.x + 2) + *(w.v + 12) * *(w.x + 3);
-    *(v + 1) = *(w.v + 1) * *(w.x) + *(w.v + 5) * *(w.x + 1) + *(w.v + 9) * *(w.x + 2) + *(w.v + 13) * *(w.x + 3);
-    *(v + 2) = *(w.v + 2) * *(w.x) + *(w.v + 6) * *(w.x + 1) + *(w.v + 10) * *(w.x + 2) + *(w.v + 14) * *(w.x + 3);
-    *(v + 3) = *(w.v + 3) * *(w.x) + *(w.v + 7) * *(w.x + 1) + *(w.v + 11) * *(w.x + 2) + *(w.v + 15) * *(w.x + 3);
+    retain();
+    *(v) = *(w.v) * *(x) + *(w.v + 4) * *(x + 1) + *(w.v + 8) * *(x + 2) + *(w.v + 12) * *(x + 3);
+    *(v + 1) = *(w.v + 1) * *(x) + *(w.v + 5) * *(x + 1) + *(w.v + 9) * *(x + 2) + *(w.v + 13) * *(x + 3);
+    *(v + 2) = *(w.v + 2) * *(x) + *(w.v + 6) * *(x + 1) + *(w.v + 10) * *(x + 2) + *(w.v + 14) * *(x + 3);
+    *(v + 3) = *(w.v + 3) * *(x) + *(w.v + 7) * *(x + 1) + *(w.v + 11) * *(x + 2) + *(w.v + 15) * *(x + 3);
+}
+
+void Matrix::vecMulScalar(REAL s)
+{
+    *(v) *= s;
+    *(v + 1) *= s;
+    *(v + 2) *= s;
+    *(v + 3) *= s;
 }
 
 void Matrix::vec3CrossVec3(Matrix &w)

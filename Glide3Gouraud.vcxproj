@@ -143,7 +143,6 @@
     <ClCompile Include="3d.cpp" />
     <ClCompile Include="llist.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mat.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="obj.cpp" />
   </ItemGroup>

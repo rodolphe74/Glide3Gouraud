@@ -18,7 +18,6 @@ size_t lines[];
 class Matrix
 {
 private:
-	MEMORY v = { 0 };
 	MEMORY x = { 0 };	// used to cache
 	MEMORY y = { 0 };	// used to hold transposed
 
@@ -48,6 +47,7 @@ private:
 
 
 public:
+	MEMORY v = { 0 };
 	Matrix(VTYPE t)
 	{
 		this->t = t;
@@ -176,12 +176,15 @@ public:
 				*(y + i * 4 + j) = *(v + j * 4 + i);
 	}
 
-	void add(Matrix &w);
+	void matAddMat(Matrix &w);
+	void matSubMat(Matrix &w);
 	void matMulMat(Matrix &w);
 	void matMulMatMmx(Matrix &w);
 	void vecAddVec(Matrix &w);
+	void vecSubVec(Matrix &w);
 	void vecMulVec(Matrix &w);
 	void vec4MulMat4(Matrix &w);
+	void vecMulScalar(REAL s);
 
 	void vec3CrossVec3(Matrix &w);
 	void vec3Normalize();
