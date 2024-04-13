@@ -24,13 +24,13 @@ namespace Fx {
 	} Vertex;
 }
 
-void __lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat);
-void __perspective(float fov_y, float aspect, float n, float f, Matrix &mat);
-void __rotationX(REAL angle, Matrix &mat);
-void __rotationY(REAL angle, Matrix &mat);
-void __rotationZ(REAL angle, Matrix &mat);
-void __translateObject(Obj &o, Matrix &v);
-void __transformObject(Obj &o, Matrix &m);
+void lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat);
+void perspective(float fov_y, float aspect, float n, float f, Matrix &mat);
+void rotationX(REAL angle, Matrix &mat);
+void rotationY(REAL angle, Matrix &mat);
+void rotationZ(REAL angle, Matrix &mat);
+void translateObject(Obj &o, Matrix &v);
+void transformObject(Obj &o, Matrix &m);
 light *create_light(float x, float y, float z, color c, float i);
 void createSphere(Obj &o, int sectors, int stacks, float radius);
 void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices);

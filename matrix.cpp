@@ -113,16 +113,9 @@ void Matrix::vec4MulMat4Mmx(Matrix& w)
 	__m128 a, s;
 	for (int i = 0; i < 4; i++) {
 		memcpy(mmxA, w.v + i * 4, 16);
-		//mmxB[0] = *(x + i);
-		//mmxB[1] = *(x + i);
-		//mmxB[2] = *(x + i);
-		//mmxB[3] = *(x + i);
 		a = _mm_load_ps(mmxA);
-		//b = _mm_load_ps(mmxB);
-		//s = _mm_mul_ps(a, b);
 		s = _mm_mul_ps(a, _mm_set1_ps(*(x + i)));
 		_mm_store_ps(mmxR, s);
-
 		*(v) += mmxR[0];
 		*(v + 1) += mmxR[1];
 		*(v + 2) += mmxR[2];

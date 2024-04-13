@@ -1,16 +1,12 @@
+#include "3d.h"
+#include <float.h>
+#include <fstream>
+#include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <float.h>
-#include "3d.h"
-//#include "llist.h"
-//#include "mathc.h"
-
-
-#include <fstream>
 #include <string>
-#include <iostream>
+#include <string.h>
 
 
 #define MILLEVINGTQUATRE 1024
@@ -56,7 +52,7 @@ int shininess = 13;
 
 
 
-void __lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
+void lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
 {
 	// https://github.com/felselva/mathc
 	Matrix forward({ target.v[0], target.v[1], target.v[2] }, VEC3);
@@ -89,7 +85,7 @@ void __lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
 	mat.matSetAt(3, 3, 1.0f);
 }
 
-void __perspective(float fov_y, float aspect, float n, float f, Matrix &mat)
+void perspective(float fov_y, float aspect, float n, float f, Matrix &mat)
 {
 	// https://github.com/felselva/mathc
 	float tan_half_fov_y = (float)(1.0f / std::tan(fov_y * 0.5f));
@@ -115,7 +111,7 @@ void __perspective(float fov_y, float aspect, float n, float f, Matrix &mat)
 	mat.matSetAt(3, 3, 0.0f);
 }
 
-void __rotationX(REAL angle, Matrix &mat)
+void rotationX(REAL angle, Matrix &mat)
 {
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
@@ -128,7 +124,7 @@ void __rotationX(REAL angle, Matrix &mat)
 	mat.v[15] = 1;
 }
 
-void __rotationY(REAL angle, Matrix &mat)
+void rotationY(REAL angle, Matrix &mat)
 {
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
@@ -141,7 +137,7 @@ void __rotationY(REAL angle, Matrix &mat)
 	mat.v[15] = 1;
 }
 
-void __rotationZ(REAL angle, Matrix &mat)
+void rotationZ(REAL angle, Matrix &mat)
 {
 	float cs = std::cos(angle);
 	float sn = std::sin(angle);
@@ -154,7 +150,7 @@ void __rotationZ(REAL angle, Matrix &mat)
 	mat.v[15] = 1;
 }
 
-void __translateObject(Obj &o, Matrix &m)
+void translateObject(Obj &o, Matrix &m)
 {
 	Matrix vx(VEC3);
 	Matrix vn(VEC3);
@@ -177,7 +173,7 @@ void __translateObject(Obj &o, Matrix &m)
 	}
 }
 
-void __transformObject(Obj &o, Matrix &m)
+void transformObject(Obj &o, Matrix &m)
 {
 	Matrix vx(VEC4);
 	Matrix vn(VEC4);
@@ -403,8 +399,9 @@ void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix 
 			cameraPos.vecMulScalar(1 / cameraPos.v[3]);
 
 			// Feed 3DFX polygon /////////
+			// 1.333 to compensate 3dfx resolution ratio
 			vertices[j].x = (FxFloat)MIN(w - 1, (cameraPos.v[0] + 1) * 0.5 * w);
-			vertices[j].y = (FxFloat)MIN(h - 1, (cameraPos.v[1] + 1) * 0.5 * h);
+			vertices[j].y = (FxFloat)MIN(h - 1, (cameraPos.v[1] * 1.333 + 1) * 0.5 * h);
 			vertices[j].z = (FxFloat)MIN(65535, (cameraPos.v[2] + 1) * 0.5 * 65536);
 
 			int r = (int)MIN(255, MAX(0, c.v[0]));

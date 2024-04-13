@@ -29,25 +29,32 @@ Matrix _translationY(VEC4);
 
 int Start(HWND hwin)
 {
-	//Matrix V({ 1,2,3,4 }, VEC4);
-	//Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+	std::ofstream out("matrix.log", std::ios_base::app);
+	Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+	Matrix V({ 1,2,3,4 }, VEC4);
+	Matrix X({ 1,2,3,4 }, VEC4);
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		V.copy(X);
+		V.vec4MulMat4(W);
+	}
+	endLap("#1#");
+	out << V;
 
-	//V.vec4MulMat4(W);
-	//std::ofstream out("matrix.log", std::ios_base::app);
-	//out << V;
+	startLap();
+	for (int i = 0; i < 10000; i++) {
+		V.copy(X);
+		V.vec4MulMat4Mmx(W);
+	}
+	endLap("#2#");
+	out << V;
+	exit(1);
 
-	//Matrix VX({ 1,2,3,4 }, VEC4);
-	//Matrix WX({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+	lookAt(_fromPosition_, _toTarget_, _up_, _view_);
+	perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
 
-	//VX.vec4MulMat4Mmx(WX);
-	//out << VX;
-	//exit(1);
-
-	__lookAt(_fromPosition_, _toTarget_, _up_, _view_);
-	__perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
-
-	__rotationY((float)TO_RADIAN(1.0f/2), _rotationY_);
-	__rotationZ((float)TO_RADIAN(0.8f/2), _rotationZ_);
+	rotationY((float)TO_RADIAN(1.0f/2), _rotationY_);
+	rotationZ((float)TO_RADIAN(0.8f/2), _rotationZ_);
 
 	color c = { 255, 255, 255 };
 	lg = create_light(0.0f, 0.0f, 8.0f, c, 255.0f);
@@ -99,10 +106,10 @@ void End()
 int Update()
 {
 	// Clear buffers : color buffer = 0, alpha buffer and depth buffer : not used
-	grBufferClear(0x000000, 0, 0xFFFF);
+	grBufferClear(0x410994, 0, 0xFFFF);
 
-	__transformObject(*o, _rotationY_);
-	__transformObject(*o, _rotationZ_);
+	transformObject(*o, _rotationY_);
+	transformObject(*o, _rotationZ_);
 	__renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
 
 	// Wait for vertical retrace and Swap buffers.
