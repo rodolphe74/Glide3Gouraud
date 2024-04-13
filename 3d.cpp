@@ -19,11 +19,19 @@ static std::chrono::steady_clock::time_point beginTime;
 static std::chrono::steady_clock::time_point endTime;
 
 // Bronze
-float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
-float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
-float ambient[] = { 1.0f, 0.5f, 0.31f };
+//float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
+//float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
+//float ambient[] = { 1.0f, 0.5f, 0.31f };
+//float specularStrength = 1.0f;
+//int shininess = 52;
+
+// Jade
+float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white light diffuse
+float specularLightColor[] = { 0.316228f, 	0.316228f, 0.316228f };
+float ambient[] = { 0.135f, 0.2225f, 0.1575f };
 float specularStrength = 1.0f;
-int shininess = 52;
+int shininess = 13;
+
 
 // Turquoise
 //float diffuseLightColor[] = { 0.396f, 0.74151f, 0.69102f };
@@ -45,6 +53,8 @@ int shininess = 52;
 //float ambient[] = { 0.25f, 0.25f, 0.25f };
 //float specularStrength = 1.0f;
 //int shininess = 150;
+
+
 
 void __lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
 {
