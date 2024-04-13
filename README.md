@@ -1,3 +1,3 @@
 # Glide3Gouraud
 
-<img src="Donkey.gif">
+<img src="donkey.gif">
