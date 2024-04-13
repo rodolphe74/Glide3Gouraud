@@ -1,3 +1,3 @@
 # Glide3Gouraud
 
-(Donkey.gif)[]
+<img src="Donkey.gif">
