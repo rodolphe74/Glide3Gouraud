@@ -36,6 +36,7 @@ void createSphere(Obj &o, int sectors, int stacks, float radius);
 void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices);
 //void render_vertices(vertex **vertices, int length, float *camera, float *projection, int w, int h);
 
+void initLap();
 void startLap();
 void endLap(std::string desc);
-
+void meanLap(std::string desc);

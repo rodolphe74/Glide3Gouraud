@@ -29,26 +29,26 @@ Matrix _translationY(VEC4);
 
 int Start(HWND hwin)
 {
-	std::ofstream out("matrix.log", std::ios_base::app);
-	Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
-	Matrix V({ 1,2,3,4 }, VEC4);
-	Matrix X({ 1,2,3,4 }, VEC4);
-	startLap();
-	for (int i = 0; i < 10000; i++) {
-		V.copy(X);
-		V.vec4MulMat4(W);
-	}
-	endLap("#1#");
-	out << V;
+	//std::ofstream out("matrix.log", std::ios_base::app);
+	//Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+	//Matrix V({ 1,2,3,4 }, VEC4);
+	//Matrix X({ 1,2,3,4 }, VEC4);
+	//startLap();
+	//for (int i = 0; i < 10000; i++) {
+	//	V.copy(X);
+	//	V.vec4MulMat4(W);
+	//}
+	//endLap("#1#");
+	//out << V;
 
-	startLap();
-	for (int i = 0; i < 10000; i++) {
-		V.copy(X);
-		V.vec4MulMat4Mmx(W);
-	}
-	endLap("#2#");
-	out << V;
-	exit(1);
+	//startLap();
+	//for (int i = 0; i < 10000; i++) {
+	//	V.copy(X);
+	//	V.vec4MulMat4Mmx(W);
+	//}
+	//endLap("#2#");
+	//out << V;
+	//exit(1);
 
 	lookAt(_fromPosition_, _toTarget_, _up_, _view_);
 	perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
@@ -93,6 +93,8 @@ int Start(HWND hwin)
 	grDepthBufferFunction(GR_CMP_LESS);
 	grDepthMask(FXTRUE);
 
+	initLap();
+
 	return 1;
 }
 
@@ -108,9 +110,11 @@ int Update()
 	// Clear buffers : color buffer = 0, alpha buffer and depth buffer : not used
 	grBufferClear(0x410994, 0, 0xFFFF);
 
+	startLap();
 	transformObject(*o, _rotationY_);
 	transformObject(*o, _rotationZ_);
 	__renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
+	endLap("Update");
 
 	// Wait for vertical retrace and Swap buffers.
 	grBufferSwap(1);
@@ -129,6 +133,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return -1;
 		return 0;
 	case WM_DESTROY:
+		meanLap("Update");
 		End();
 		PostQuitMessage(0);
 		return 0;

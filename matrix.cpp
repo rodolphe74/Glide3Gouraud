@@ -111,16 +111,16 @@ void Matrix::vec4MulMat4Mmx(Matrix& w)
 	retain();
 	clear();
 	__m128 a, s;
+    __m128 b;
+    memcpy(mmxB, v, 16);
+    b = _mm_load_ps(mmxB);
 	for (int i = 0; i < 4; i++) {
 		memcpy(mmxA, w.v + i * 4, 16);
 		a = _mm_load_ps(mmxA);
 		s = _mm_mul_ps(a, _mm_set1_ps(*(x + i)));
-		_mm_store_ps(mmxR, s);
-		*(v) += mmxR[0];
-		*(v + 1) += mmxR[1];
-		*(v + 2) += mmxR[2];
-		*(v + 3) += mmxR[3];
+        b = _mm_add_ps(b, s);
 	}
+    _mm_store_ps(v, b);
 }
 
 void Matrix::vecMulScalar(REAL s)

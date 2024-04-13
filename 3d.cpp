@@ -10,9 +10,12 @@
 
 
 #define MILLEVINGTQUATRE 1024
+#define VEC4MULMAT4 vec4MulMat4Mmx
 
 static std::chrono::steady_clock::time_point beginTime;
 static std::chrono::steady_clock::time_point endTime;
+static double countLap = 0;
+static double sumLap = 0;
 
 // Bronze
 //float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
@@ -159,14 +162,14 @@ void translateObject(Obj &o, Matrix &m)
 		vx.v[0] = vertex->pos[0];
 		vx.v[1] = vertex->pos[1];
 		vx.v[2] = vertex->pos[2];
-		vx.vec4MulMat4(m);
+		vx.VEC4MULMAT4(m);
 		vertex->pos[0] = vx.v[0];
 		vertex->pos[1] = vx.v[1];
 		vertex->pos[2] = vx.v[2];
 		vn.v[0] = vertex->normal[0];
 		vn.v[1] = vertex->normal[1];
 		vn.v[2] = vertex->normal[2];
-		vn.vec4MulMat4(m);
+		vn.VEC4MULMAT4(m);
 		vertex->normal[0] = vn.v[0];
 		vertex->normal[1] = vn.v[1];
 		vertex->normal[2] = vn.v[2];
@@ -182,14 +185,14 @@ void transformObject(Obj &o, Matrix &m)
 		vx.v[0] = vertex->pos[0];
 		vx.v[1] = vertex->pos[1];
 		vx.v[2] = vertex->pos[2];
-		vx.vec4MulMat4(m);
+		vx.VEC4MULMAT4(m);
 		vertex->pos[0] = vx.v[0];
 		vertex->pos[1] = vx.v[1];
 		vertex->pos[2] = vx.v[2];
 		vn.v[0] = vertex->normal[0];
 		vn.v[1] = vertex->normal[1];
 		vn.v[2] = vertex->normal[2];
-		vn.vec4MulMat4(m);
+		vn.VEC4MULMAT4(m);
 		vertex->normal[0] = vn.v[0];
 		vertex->normal[1] = vn.v[1];
 		vertex->normal[2] = vn.v[2];
@@ -310,7 +313,6 @@ void __reflect(Matrix &out, Matrix &incident, Matrix &normal)
 
 void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices)
 {
-	//startLap();
 	Matrix worldPos(VEC3);
 	Matrix worldNorm(VEC3);
 	Matrix lightDir(VEC3);
@@ -394,8 +396,8 @@ void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix 
 			cameraPos.v[2] = worldPos.v[2];
 			cameraPos.v[3] = 1.0f;
 
-			cameraPos.vec4MulMat4(view);
-			cameraPos.vec4MulMat4(perspective);
+			cameraPos.VEC4MULMAT4(view);
+			cameraPos.VEC4MULMAT4(perspective);
 			cameraPos.vecMulScalar(1 / cameraPos.v[3]);
 
 			// Feed 3DFX polygon /////////
@@ -416,7 +418,12 @@ void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix 
 
 		delete[] vertices;
 	}
-	//endLap("render");
+}
+
+void initLap()
+{
+	countLap = 0;
+	sumLap = 0;
 }
 
 void startLap()
@@ -430,6 +437,14 @@ void endLap(std::string desc)
 	endTime = std::chrono::steady_clock::now();
 	std::ofstream out("3d.log", std::ios_base::app);
 	out << "Time " << desc << " = " << std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count() << " units" << std::endl;
+	countLap++;
+	sumLap += std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
+}
+
+void meanLap(std::string desc)
+{
+	std::ofstream out("3d.log", std::ios_base::app);
+	out << "Mean time " << desc << " = " << (sumLap / countLap) << " units" << std::endl;
 }
 
 
