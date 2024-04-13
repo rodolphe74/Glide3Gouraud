@@ -4,8 +4,8 @@
 #include <string.h>
 #include <float.h>
 #include "3d.h"
-#include "llist.h"
-#include "mathc.h"
+//#include "llist.h"
+//#include "mathc.h"
 
 
 #include <fstream>

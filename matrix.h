@@ -184,6 +184,7 @@ public:
 	void vecSubVec(Matrix &w);
 	void vecMulVec(Matrix &w);
 	void vec4MulMat4(Matrix &w);
+	void vec4MulMat4Mmx(Matrix& w);
 	void vecMulScalar(REAL s);
 
 	void vec3CrossVec3(Matrix &w);

@@ -29,6 +29,20 @@ Matrix _translationY(VEC4);
 
 int Start(HWND hwin)
 {
+	//Matrix V({ 1,2,3,4 }, VEC4);
+	//Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+
+	//V.vec4MulMat4(W);
+	//std::ofstream out("matrix.log", std::ios_base::app);
+	//out << V;
+
+	//Matrix VX({ 1,2,3,4 }, VEC4);
+	//Matrix WX({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
+
+	//VX.vec4MulMat4Mmx(WX);
+	//out << VX;
+	//exit(1);
+
 	__lookAt(_fromPosition_, _toTarget_, _up_, _view_);
 	__perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
 
@@ -85,7 +99,7 @@ void End()
 int Update()
 {
 	// Clear buffers : color buffer = 0, alpha buffer and depth buffer : not used
-	grBufferClear(0x404040, 0, 0xFFFF);
+	grBufferClear(0x000000, 0, 0xFFFF);
 
 	__transformObject(*o, _rotationY_);
 	__transformObject(*o, _rotationZ_);
