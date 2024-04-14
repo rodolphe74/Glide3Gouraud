@@ -14,7 +14,7 @@
 #include "matrix.h"
 
 Obj *o;
-light *lg;
+Light *lg;
 
 // Matrix _fromPosition_({ 0.0f, 0.0f, 18.0f }, VEC3);
 Matrix _fromPosition_({ 0.0f, 4.0f, 18.0f }, VEC3);
@@ -24,40 +24,19 @@ Matrix _view_(MAT4);
 Matrix _perspective_(MAT4);
 Matrix _rotationY_(MAT4);
 Matrix _rotationZ_(MAT4);
-Matrix _translationY(VEC4);
+Matrix _translationY_(VEC4);
 
 
 int Start(HWND hwin)
 {
-	//std::ofstream out("matrix.log", std::ios_base::app);
-	//Matrix W({ 5,6,7,8, 15,16,17,18,25,26,27,28 ,35,36,37,38 }, MAT4);
-	//Matrix V({ 1,2,3,4 }, VEC4);
-	//Matrix X({ 1,2,3,4 }, VEC4);
-	//startLap();
-	//for (int i = 0; i < 10000; i++) {
-	//	V.copy(X);
-	//	V.vec4MulMat4(W);
-	//}
-	//endLap("#1#");
-	//out << V;
-
-	//startLap();
-	//for (int i = 0; i < 10000; i++) {
-	//	V.copy(X);
-	//	V.vec4MulMat4Mmx(W);
-	//}
-	//endLap("#2#");
-	//out << V;
-	//exit(1);
-
 	lookAt(_fromPosition_, _toTarget_, _up_, _view_);
 	perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
 
 	rotationY((float)TO_RADIAN(1.0f/2), _rotationY_);
 	rotationZ((float)TO_RADIAN(0.8f/2), _rotationZ_);
 
-	color c = { 255, 255, 255 };
-	lg = create_light(0.0f, 0.0f, 8.0f, c, 255.0f);
+	Color c = { 255, 255, 255 };
+	lg = createLight(0.0f, 0.0f, 8.0f, c, 255.0f);
 
 	o = new Obj("./Donkey.obj");
 
@@ -113,7 +92,7 @@ int Update()
 	startLap();
 	transformObject(*o, _rotationY_);
 	transformObject(*o, _rotationZ_);
-	__renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
+	renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
 	endLap("Update");
 
 	// Wait for vertical retrace and Swap buffers.

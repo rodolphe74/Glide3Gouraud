@@ -31,9 +31,9 @@ void rotationY(REAL angle, Matrix &mat);
 void rotationZ(REAL angle, Matrix &mat);
 void translateObject(Obj &o, Matrix &v);
 void transformObject(Obj &o, Matrix &m);
-light *create_light(float x, float y, float z, color c, float i);
+Light *createLight(float x, float y, float z, Color c, float i);
 void createSphere(Obj &o, int sectors, int stacks, float radius);
-void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices);
+void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices);
 //void render_vertices(vertex **vertices, int length, float *camera, float *projection, int w, int h);
 
 void initLap();

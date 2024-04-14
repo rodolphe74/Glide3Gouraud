@@ -44,7 +44,7 @@ Obj::Obj(int length, ...)
 	va_list valist;
 	va_start(valist, length);
 	for (int i = 0; i < length; i++) {
-		_face *f = va_arg(valist, _face *);
+		Face *f = va_arg(valist, Face *);
 		o.faces[i] = f;
 	}
 	va_end(valist);
@@ -63,7 +63,7 @@ Obj::Obj(const char *filename)
 	int uv_count = 0;
 	int i = 0;
 
-	o.color = _white;
+	o.color = white;
 
 	filePointer = fopen(filename, "r");
 	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
@@ -93,7 +93,7 @@ Obj::Obj(const char *filename)
 		if (strcmp("v", header) == 0) {
 			float x, y, z;
 			howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-			_vertex *v = createVertex(x, y, z);
+			Vertex *v = createVertex(x, y, z);
 			i++;
 		}
 	}
@@ -175,10 +175,10 @@ Obj::Obj(const char *filename)
 			}
 
 
-			_face *f = createFace(0);
+			Face *f = createFace(0);
 			f->vertices.reserve(k);
 			for (i = 0; i < k; i++) {
-				_vertex *v = o.verticesList[face_indexes[i] - 1];
+				Vertex *v = o.verticesList[face_indexes[i] - 1];
 				addVertexToFace(f, v);
 				setNormal(v, normals_list[normal_indexes[i] - 1][0], normals_list[normal_indexes[i] - 1][1], normals_list[normal_indexes[i] - 1][2]);
 
@@ -208,27 +208,27 @@ Obj::Obj(const char *filename)
 }
 #pragma warning(pop) 
 
-_vertex *Obj::createVertex(double x, double y, double z)
+Vertex *Obj::createVertex(double x, double y, double z)
 {
-	_vertex *v = new _vertex;
+	Vertex *v = new Vertex;
 	v->pos[0] = (float)x;
 	v->pos[1] = (float)y;
 	v->pos[2] = (float)z;
 	v->pos[3] = (float)1;
-	v->colour = _white;
+	v->colour = white;
 	v->referencesCount = 0;
 	o.verticesList.push_back(v);
 	return v;
 }
 
-_vertex *Obj::createVertexColor(double x, double y, double z, _color c)
+Vertex *Obj::createVertexColor(double x, double y, double z, Color c)
 {
-	_vertex *v = createVertex(x, y, z);
+	Vertex *v = createVertex(x, y, z);
 	v->colour = c;
 	return v;
 }
 
-void Obj::setNormal(_vertex *v, float x, float y, float z)
+void Obj::setNormal(Vertex *v, float x, float y, float z)
 {
 	v->normal[0] = x;
 	v->normal[1] = y;
@@ -236,42 +236,42 @@ void Obj::setNormal(_vertex *v, float x, float y, float z)
 	v->normal[3] = 1.0f;
 }
 
-void Obj::freeVertex(_vertex *v)
+void Obj::freeVertex(Vertex *v)
 {
 	delete v;
 }
 
-void Obj::printVertex(_vertex *v)
+void Obj::printVertex(Vertex *v)
 {
 	printf(">[%lf %lf %lf %lf]\n", getVertexCoord(v, 0), getVertexCoord(v, 1), getVertexCoord(v, 2), getVertexCoord(v, 3));
 }
 
-double Obj::getVertexCoord(_vertex *v, int i)
+double Obj::getVertexCoord(Vertex *v, int i)
 {
 	return v->pos[i];
 }
 
-_face *Obj::createFace(int length, ...)
+Face *Obj::createFace(int length, ...)
 {
-	_face *f = new _face;
+	Face *f = new Face;
 	va_list valist;
 	va_start(valist, length);
 	for (int i = 0; i < length; i++) {
-		_vertex *v = va_arg(valist, _vertex *);
+		Vertex *v = va_arg(valist, Vertex *);
 		f->vertices.push_back(v);
 	}
 	va_end(valist);
 	return f;
 }
 
-int Obj::addVertexToFace(_face *f, _vertex *v)
+int Obj::addVertexToFace(Face *f, Vertex *v)
 {
 	v->referencesCount++;
 	f->vertices.push_back(v);
 	return 1;
 }
 
-void Obj::computeNormal(_face *f)
+void Obj::computeNormal(Face *f)
 {
 	//if (f->length > 1) {
 	//	float v1[3];
@@ -288,16 +288,16 @@ void Obj::computeNormal(_face *f)
 	//}
 }
 
-void Obj::freeFace(_face *f)
+void Obj::freeFace(Face *f)
 {
 	for (size_t i = 0; i < f->vertices.size(); i++) {
-		_vertex *v = f->vertices[i];
+		Vertex *v = f->vertices[i];
 		v->referencesCount = (v->referencesCount > 0 ? --v->referencesCount : 0);
 	}
 	delete f;
 }
 
-int Obj::addFace(_face *f)
+int Obj::addFace(Face *f)
 {
 	o.faces.push_back(f);
 	return 1;

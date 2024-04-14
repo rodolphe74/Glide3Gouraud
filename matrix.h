@@ -26,9 +26,9 @@ private:
 	float __declspec(align(16)) mmxB[4];
 	float __declspec(align(16)) mmxR[4];
 
-	float __declspec(align(32)) avxA[8];
-	float __declspec(align(32)) avxB[8];
-	float __declspec(align(32)) avxR[8];
+	//float __declspec(align(32)) avxA[8];
+	//float __declspec(align(32)) avxB[8];
+	//float __declspec(align(32)) avxR[8];
 
 	VTYPE t = VTYPE::MAT4;
 	int r = MAT4SZ;

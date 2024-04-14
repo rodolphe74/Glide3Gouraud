@@ -1,46 +1,59 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <string>
+#include "globals.h"
 
 #define MILLEVINGTQUATRE 1024
+
+typedef struct material {
+	float diffuseLightColor[3];		// Kd
+	float specularLightColor[3];	// Ks
+	float ambient[3];				// Ka
+	float specularStrength = 1.0f;
+	int shininess;					// Ns
+} Material;
 
 typedef struct _color {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
-} _color;
+} Color;
 
 typedef struct _vertex {
-	float pos[/*VEC4_SIZE*/4];
-	float normal[/*VEC4_SIZE*/4];
-	_color colour;
+	float pos[4];
+	float normal[4];
+	Color colour;
 	int referencesCount = 0;
-} _vertex;
+	material material;
+} Vertex;
 
 typedef struct _face {
-	std::vector<_vertex *> vertices;
-} _face;
+	std::vector<Vertex *> vertices;
+} Face;
 
 typedef struct _object {
-	std::vector<_face *> faces;
-	std::vector<_vertex*> verticesList;
-	_color color;
-} _object;
+	std::vector<Face *> faces;
+	std::vector<Vertex*> verticesList;
+	Color color;
+} Object;
 
 typedef struct _light {
-	float pos[/*VEC4_SIZE*/4];
+	float pos[4];
 	float intensity;
-	_color c;
-} _light;
+	Color c;
+} Light;
 
 
-static _color _white = { 255, 255, 255 };
-static _color _gray = { 128, 128, 128 };
-static _color _blue = { 0, 0, 255 };
-static _color _green = { 0, 255, 0 };
-static _color _yellow = { 255, 255, 0 };
-static _color _cyan = { 0, 255, 255 };
-static _color _red = { 255, 0, 0 };
+
+static Color white = { 255, 255, 255 };
+static Color gray = { 128, 128, 128 };
+static Color blue = { 0, 0, 255 };
+static Color green = { 0, 255, 0 };
+static Color yellow = { 255, 255, 0 };
+static Color cyan = { 0, 255, 255 };
+static Color red = { 255, 0, 0 };
 
 
 class Obj
@@ -49,23 +62,23 @@ private:
 	void cut(char *src, int start, int end, char *target);
 	void split(char *string, char sep, char token_array[][50]);
 
-
 public:
-	_object o;
+	Object o;
+	static std::map<std::string, Material> materials;
 	Obj();
 	Obj(int length, ...);
 	Obj(const char *filename);
-	_vertex *createVertex(double x, double y, double z);
-	_vertex *createVertexColor(double x, double y, double z, _color c);
-	void setNormal(_vertex *v, float x, float y, float z);
-	void freeVertex(_vertex *v);
-	void printVertex(_vertex *v);
-	double getVertexCoord(_vertex *v, int i);
-	_face *createFace(int length, ...);
-	int addVertexToFace(_face *f, _vertex *v);
-	void computeNormal(_face *f);
-	void freeFace(_face *f);
-	int addFace(_face *f);
+	Vertex *createVertex(double x, double y, double z);
+	Vertex *createVertexColor(double x, double y, double z, Color c);
+	void setNormal(Vertex *v, float x, float y, float z);
+	void freeVertex(Vertex *v);
+	void printVertex(Vertex *v);
+	double getVertexCoord(Vertex *v, int i);
+	Face *createFace(int length, ...);
+	int addVertexToFace(Face *f, Vertex *v);
+	void computeNormal(Face *f);
+	void freeFace(Face *f);
+	int addFace(Face *f);
 	void freeUselessVertices();
 	~Obj();
 };

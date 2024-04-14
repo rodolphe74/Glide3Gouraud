@@ -18,14 +18,14 @@ static double countLap = 0;
 static double sumLap = 0;
 
 // Bronze
-//float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white light diffuse
+//float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white Light diffuse
 //float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
 //float ambient[] = { 1.0f, 0.5f, 0.31f };
 //float specularStrength = 1.0f;
 //int shininess = 52;
 
 // Jade
-float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white light diffuse
+float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white Light diffuse
 float specularLightColor[] = { 0.316228f, 	0.316228f, 0.316228f };
 float ambient[] = { 0.135f, 0.2225f, 0.1575f };
 float specularStrength = 1.0f;
@@ -158,7 +158,7 @@ void translateObject(Obj &o, Matrix &m)
 	Matrix vx(VEC3);
 	Matrix vn(VEC3);
 	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
-		_vertex *vertex = o.o.verticesList[i];
+		Vertex *vertex = o.o.verticesList[i];
 		vx.v[0] = vertex->pos[0];
 		vx.v[1] = vertex->pos[1];
 		vx.v[2] = vertex->pos[2];
@@ -181,7 +181,7 @@ void transformObject(Obj &o, Matrix &m)
 	Matrix vx(VEC4);
 	Matrix vn(VEC4);
 	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
-		_vertex *vertex = o.o.verticesList[i];
+		Vertex *vertex = o.o.verticesList[i];
 		vx.v[0] = vertex->pos[0];
 		vx.v[1] = vertex->pos[1];
 		vx.v[2] = vertex->pos[2];
@@ -199,96 +199,96 @@ void transformObject(Obj &o, Matrix &m)
 	}
 }
 
-void compute_normal(face *f)
-{
-	//if (f->length > 1) {
-	//	float v1[3];
-	//	float v2[3];
-	//	float *c = (float *) malloc(sizeof(float) * VEC3_SIZE);
-	//	vec3_subtract(v1, f->vertices[1]->pos, f->vertices[0]->pos);
-	//	vec3_subtract(v2, f->vertices[f->length - 1]->pos, f->vertices[0]->pos);
-
-	//	vec3_cross(c, v1, v2);
-
-	//	for (int i = 0; i < f->length; i++)
-	//		set_normal(f->vertices[i], c[0], c[1], -c[2]);
-	//	free(c);
-	//}
-}
+//void compute_normal(face *f)
+//{
+//	//if (f->length > 1) {
+//	//	float v1[3];
+//	//	float v2[3];
+//	//	float *c = (float *) malloc(sizeof(float) * VEC3_SIZE);
+//	//	vec3_subtract(v1, f->vertices[1]->pos, f->vertices[0]->pos);
+//	//	vec3_subtract(v2, f->vertices[f->length - 1]->pos, f->vertices[0]->pos);
+//
+//	//	vec3_cross(c, v1, v2);
+//
+//	//	for (int i = 0; i < f->length; i++)
+//	//		set_normal(f->vertices[i], c[0], c[1], -c[2]);
+//	//	free(c);
+//	//}
+//}
 
 void createSphere(Obj &o, int sectors, int stacks, float radius)
 {
-	float x, y, z, xy;                              // vertex position
-	float nx, ny, nz, lengthInv = 1.0f / radius;   // vertex normal
-	//float s, t;                                     // vertex texCoord
+	//float x, y, z, xy;                              // vertex position
+	//float nx, ny, nz, lengthInv = 1.0f / radius;   // vertex normal
+	////float s, t;                                     // vertex texCoord
 
-	float sectorStep = (float)(2 * M_PI / sectors);
-	float stackStep = (float)(M_PI / stacks);
-	float sectorAngle, stackAngle;
+	//float sectorStep = (float)(2 * M_PI / sectors);
+	//float stackStep = (float)(M_PI / stacks);
+	//float sectorAngle, stackAngle;
 
-	_vertex **vertices = (_vertex **)malloc((sectors + 1) * (stacks + 1) * sizeof(vertex *));
+	//Vertex **vertices = (Vertex **)malloc((sectors + 1) * (stacks + 1) * sizeof(vertex *));
 
-	printf("malloc %d\n", (sectors + 1) * (stacks + 1));
+	//printf("malloc %d\n", (sectors + 1) * (stacks + 1));
 
-	int count = 0;
+	//int count = 0;
 
-	for (int i = 0; i <= stacks; ++i) {
-		stackAngle = (float)M_PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
-		xy = radius * cos/*f*/(stackAngle);                // r * cos(u)
-		z = radius * sin/*f*/(stackAngle);                 // r * sin(u)
+	//for (int i = 0; i <= stacks; ++i) {
+	//	stackAngle = (float)M_PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+	//	xy = radius * cos/*f*/(stackAngle);                // r * cos(u)
+	//	z = radius * sin/*f*/(stackAngle);                 // r * sin(u)
 
-		// matAddMat (sectorCount+1) vertices per stack
-		// the first and last vertices have same position and normal, but different tex coords
-		for (int j = 0; j <= sectors; ++j) {
-			sectorAngle = j * sectorStep; // starting from 0 to 2pi
+	//	// matAddMat (sectorCount+1) vertices per stack
+	//	// the first and last vertices have same position and normal, but different tex coords
+	//	for (int j = 0; j <= sectors; ++j) {
+	//		sectorAngle = j * sectorStep; // starting from 0 to 2pi
 
-			// vertex position (x, y, z)
-			x = xy * cos/*f*/(sectorAngle);    // r * cos(u) * cos(v)
-			y = xy * sin/*f*/(sectorAngle);    // r * cos(u) * sin(v)
-			vertices[count] = o.createVertex(x, y, z);
+	//		// vertex position (x, y, z)
+	//		x = xy * cos/*f*/(sectorAngle);    // r * cos(u) * cos(v)
+	//		y = xy * sin/*f*/(sectorAngle);    // r * cos(u) * sin(v)
+	//		vertices[count] = o.createVertex(x, y, z);
 
-			// normalized vertex normal (nx, ny, nz)
-			nx = x * lengthInv;
-			ny = y * lengthInv;
-			nz = z * lengthInv;
-			// set_normal(vertices[count], nx, ny, nz);
+	//		// normalized vertex normal (nx, ny, nz)
+	//		nx = x * lengthInv;
+	//		ny = y * lengthInv;
+	//		nz = z * lengthInv;
+	//		// set_normal(vertices[count], nx, ny, nz);
 
-			count++;
-		}
-	}
+	//		count++;
+	//	}
+	//}
 
-	// generate CCW index list of sphere triangles
-	// k1--k1+1
-	// |  / |
-	// | /  |
-	// k2--k2+1
-	int k1, k2;
+	//// generate CCW index list of sphere triangles
+	//// k1--k1+1
+	//// |  / |
+	//// | /  |
+	//// k2--k2+1
+	//int k1, k2;
 
-	for (int i = 0; i < stacks; ++i) {
-		k1 = i * (sectors + 1); // beginning of current stack
-		k2 = k1 + sectors + 1;  // beginning of next stack
+	//for (int i = 0; i < stacks; ++i) {
+	//	k1 = i * (sectors + 1); // beginning of current stack
+	//	k2 = k1 + sectors + 1;  // beginning of next stack
 
-		for (int j = 0; j < sectors; ++j, ++k1, ++k2) {
-			if (i != 0) {
-				_face *f = o.createFace(3, vertices[k1], vertices[k2], vertices[k1 + 1]);
-				o.addFace(f);
-				o.computeNormal(f);
-			}
+	//	for (int j = 0; j < sectors; ++j, ++k1, ++k2) {
+	//		if (i != 0) {
+	//			Face *f = o.createFace(3, vertices[k1], vertices[k2], vertices[k1 + 1]);
+	//			o.addFace(f);
+	//			o.computeNormal(f);
+	//		}
 
-			// k1+1 => k2 => k2+1
-			if (i != (stacks - 1)) {
-				_face *f = o.createFace(3, vertices[k1 + 1], vertices[k2], vertices[k2 + 1]);
-				o.addFace(f);
-				o.computeNormal(f);
-			}
-		}
-	}
+	//		// k1+1 => k2 => k2+1
+	//		if (i != (stacks - 1)) {
+	//			Face *f = o.createFace(3, vertices[k1 + 1], vertices[k2], vertices[k2 + 1]);
+	//			o.addFace(f);
+	//			o.computeNormal(f);
+	//		}
+	//	}
+	//}
 }
 
 
-light *create_light(float x, float y, float z, color c, float i)
+Light *createLight(float x, float y, float z, Color c, float i)
 {
-	light *l = (light *)malloc(sizeof(light));
+	Light *l = (Light *)malloc(sizeof(Light));
 	if (l) {
 		l->pos[0] = (float)x;
 		l->pos[1] = (float)y;
@@ -311,7 +311,7 @@ void __reflect(Matrix &out, Matrix &incident, Matrix &normal)
 }
 
 
-void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices)
+void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices)
 {
 	Matrix worldPos(VEC3);
 	Matrix worldNorm(VEC3);
@@ -336,12 +336,12 @@ void __renderObject(light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix 
 	objectColor.v[2] = o.o.color.b;
 
 	for (size_t i = 0; i < o.o.faces.size(); i++) {
-		_face *f = o.o.faces[i];
+		Face *f = o.o.faces[i];
 		int sz = f->vertices.size();
 		Fx::Vertex *vertices = new Fx::Vertex[sz];
 
 		for (int j = 0; j < sz; j++) {
-			_vertex *v = f->vertices[j];
+			Vertex *v = f->vertices[j];
 			worldPos.v[0] = v->pos[0];
 			worldPos.v[1] = v->pos[1];
 			worldPos.v[2] = v->pos[2];
