@@ -83,8 +83,8 @@ Obj::Obj(const char *filename)
 	float **uv_list = new float *[uv_count];
 
 	//printf("vertices count :%d\n", vertices_count);
-	//printf("normals count :%d\n", normals_count);
-	//printf("uv count :%d\n", uv_count);
+	//printf("normals count :%d\n", diffuseCount);
+	//printf("uv count :%d\n", specularCount);
 
 	filePointer = fopen(filename, "r");
 	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
@@ -184,8 +184,8 @@ Obj::Obj(const char *filename)
 
 				// TODO
 				if (uv_indexes[i] - 1 > 0) {
-					//  set_uv(v, 1.0 * uv_list[uv_indexes[i] - 1][0],
-					//  1.0 * uv_list[uv_indexes[i] - 1][1]);
+					//  set_uv(v, 1.0 * specularList[uv_indexes[i] - 1][0],
+					//  1.0 * specularList[uv_indexes[i] - 1][1]);
 				}
 				else {
 					//  set_uv(v, 1.0, 1.0);
@@ -205,6 +205,126 @@ Obj::Obj(const char *filename)
 		delete[] uv_list[i];
 	}
 	delete[] uv_list;
+}
+
+void Obj::loadMaterials(const char *filename)
+{
+	FILE *filePointer;
+	char buffer[MILLEVINGTQUATRE];
+	char header[MILLEVINGTQUATRE + 1];
+	int materialsCount = 0;
+	int diffuseCount = 0;
+	int specularCount = 0;
+	int i = 0;
+
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("newmtl", header) == 0)
+			materialsCount++;
+	}
+	fclose(filePointer);
+
+	o.verticesList.reserve(materialsCount);
+	char **materialNameList = new char *[materialsCount];
+	float **diffuseList = new float *[materialsCount];
+	float **specularList = new float *[materialsCount];
+	float **ambient = new float *[materialsCount];
+	float **shininess = new float *[materialsCount];
+
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("newmtl", header) == 0) {
+			char name[256];
+			howMany = sscanf(buffer, "%s %s", header, &name);
+			strcpy(*(materialNameList + i), name);
+			i++;
+		}
+	}
+	fclose(filePointer);
+
+	i = 0;
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("Kd", header) == 0) {
+			float x, y, z;
+			howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
+			float *n = new float[3];
+			n[0] = x;
+			n[1] = y;
+			n[2] = z;
+			*(diffuseList + i) = n;
+			i++;
+		}
+	}
+	fclose(filePointer);
+
+	i = 0;
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("Ks", header) == 0) {
+			float x, y, z;
+			howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
+			float *n = new float[3];
+			n[0] = x;
+			n[1] = y;
+			n[2] = z;
+			*(specularList + i) = n;
+			i++;
+		}
+	}
+	fclose(filePointer);
+
+	i = 0;
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("Ka", header) == 0) {
+			float x, y, z;
+			howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
+			float *n = new float[3];
+			n[0] = x;
+			n[1] = y;
+			n[2] = z;
+			*(ambient + i) = n;
+			i++;
+		}
+	}
+	fclose(filePointer);
+
+	i = 0;
+	filePointer = fopen(filename, "r");
+	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
+		memset(header, 0, sizeof(header));
+		int howMany = sscanf(buffer, "%s ", header);
+		if (strcmp("Ns", header) == 0) {
+			float x;
+			howMany = sscanf(buffer, "%s %f", header, &x);
+			float *n = new float[1];
+			n[0] = x;
+			*(shininess + i) = n;
+			i++;
+		}
+	}
+	fclose(filePointer);
+
+	for (int i = 0; i < diffuseCount; i++) {
+		delete[] diffuseList[i];
+	}
+	delete[] diffuseList;
+
+	for (int i = 0; i < specularCount; i++) {
+		delete[] specularList[i];
+	}
+	delete[] specularList;
 }
 #pragma warning(pop) 
 

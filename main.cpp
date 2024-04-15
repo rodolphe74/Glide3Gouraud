@@ -16,8 +16,8 @@
 Obj *o;
 Light *lg;
 
-// Matrix _fromPosition_({ 0.0f, 0.0f, 18.0f }, VEC3);
-Matrix _fromPosition_({ 0.0f, 4.0f, 18.0f }, VEC3);
+Matrix _fromPosition_({ 0.0f, 0.0f, 5.0f }, VEC3);
+// Matrix _fromPosition_({ 0.0f, 4.0f, 18.0f }, VEC3);
 Matrix _toTarget_({ 0.0f, 0.0f, 0.0f }, VEC3);
 Matrix _up_({ 0.0f, 1.0f, 0.0f }, VEC3);
 Matrix _view_(MAT4);
@@ -38,7 +38,12 @@ int Start(HWND hwin)
 	Color c = { 255, 255, 255 };
 	lg = createLight(0.0f, 0.0f, 8.0f, c, 255.0f);
 
-	o = new Obj("./Donkey.obj");
+	// o = new Obj("./Donkey.obj");
+
+	o = new Obj("./icosphere.obj");
+
+	//o = new Obj("./scenez.obj");
+	//o->loadMaterials("scene.mtl");
 
 	// Init Glide
 	grGlideInit();
@@ -91,7 +96,7 @@ int Update()
 
 	startLap();
 	transformObject(*o, _rotationY_);
-	transformObject(*o, _rotationZ_);
+	//transformObject(*o, _rotationZ_);
 	renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
 	endLap("Update");
 

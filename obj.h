@@ -7,7 +7,7 @@
 
 #define MILLEVINGTQUATRE 1024
 
-typedef struct material {
+typedef struct _material {
 	float diffuseLightColor[3];		// Kd
 	float specularLightColor[3];	// Ks
 	float ambient[3];				// Ka
@@ -26,7 +26,7 @@ typedef struct _vertex {
 	float normal[4];
 	Color colour;
 	int referencesCount = 0;
-	material material;
+	Material material;
 } Vertex;
 
 typedef struct _face {
@@ -68,6 +68,7 @@ public:
 	Obj();
 	Obj(int length, ...);
 	Obj(const char *filename);
+	void loadMaterials(const char *filename);
 	Vertex *createVertex(double x, double y, double z);
 	Vertex *createVertexColor(double x, double y, double z, Color c);
 	void setNormal(Vertex *v, float x, float y, float z);
