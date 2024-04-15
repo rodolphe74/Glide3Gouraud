@@ -10,7 +10,7 @@
 
 
 #define MILLEVINGTQUATRE 1024
-#define VEC4MULMAT4 vec4MulMat4Mmx
+#define VEC4MULMAT4 vec4MulMat4
 
 static std::chrono::steady_clock::time_point beginTime;
 static std::chrono::steady_clock::time_point endTime;
@@ -18,18 +18,18 @@ static double countLap = 0;
 static double sumLap = 0;
 
 // Bronze
-//float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white Light diffuse
-//float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
-//float ambient[] = { 1.0f, 0.5f, 0.31f };
-//float specularStrength = 1.0f;
-//int shininess = 52;
+float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white Light diffuse
+float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
+float ambient[] = { 1.0f, 0.5f, 0.31f };
+float specularStrength = 1.0f;
+int shininess = 52;
 
 // Jade
-float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white Light diffuse
-float specularLightColor[] = { 0.316228f, 	0.316228f, 0.316228f };
-float ambient[] = { 0.135f, 0.2225f, 0.1575f };
-float specularStrength = 1.0f;
-int shininess = 13;
+//float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white Light diffuse
+//float specularLightColor[] = { 0.316228f, 	0.316228f, 0.316228f };
+//float ambient[] = { 0.135f, 0.2225f, 0.1575f };
+//float specularStrength = 1.0f;
+//int shininess = 13;
 
 
 // Turquoise
@@ -178,6 +178,7 @@ void translateObject(Obj &o, Matrix &m)
 
 void transformObject(Obj &o, Matrix &m)
 {
+	std::ofstream out("normals.log", std::ios_base::app);
 	Matrix vx(VEC4);
 	Matrix vn(VEC4);
 	for (size_t i = 0; i < o.o.verticesList.size(); i++) {
@@ -192,7 +193,9 @@ void transformObject(Obj &o, Matrix &m)
 		vn.v[0] = vertex->normal[0];
 		vn.v[1] = vertex->normal[1];
 		vn.v[2] = vertex->normal[2];
+		out << "1:" << vn << std::endl;
 		vn.VEC4MULMAT4(m);
+		out << "2:" << vn << std::endl;
 		vertex->normal[0] = vn.v[0];
 		vertex->normal[1] = vn.v[1];
 		vertex->normal[2] = vn.v[2];
@@ -313,6 +316,7 @@ void __reflect(Matrix &out, Matrix &incident, Matrix &normal)
 
 void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &from, int w, int h, int onlyVertices)
 {
+	std::ofstream out("positions.log", std::ios_base::app);
 	Matrix worldPos(VEC3);
 	Matrix worldNorm(VEC3);
 	Matrix lightDir(VEC3);
@@ -410,6 +414,10 @@ void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &f
 			int g = (int)MIN(255, MAX(1, c.v[1]));
 			int b = (int)MIN(255, MAX(2, c.v[2]));
 			vertices[j].argb = (FxU32)0 | (FxU32)r << 16 | (FxU32)g << 8 | (FxU32)b;
+
+			// Log
+			// output.print(i + "," + j + "=" + rr + "," + gg + "," + bb + "\n");
+			out << i << "," << j << "," << r << "," << g << "," << b << std::endl;
 		}
 
 		// 3DFX polygon drawing here /////////

@@ -182,6 +182,8 @@ Obj::Obj(const char *filename)
 				addVertexToFace(f, v);
 				setNormal(v, normals_list[normal_indexes[i] - 1][0], normals_list[normal_indexes[i] - 1][1], normals_list[normal_indexes[i] - 1][2]);
 
+				// TODO : create an independ list of normals for the face (vertex must not carry normals)
+
 				// TODO
 				if (uv_indexes[i] - 1 > 0) {
 					//  set_uv(v, 1.0 * specularList[uv_indexes[i] - 1][0],

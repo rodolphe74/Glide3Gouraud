@@ -40,7 +40,7 @@ int Start(HWND hwin)
 
 	// o = new Obj("./Donkey.obj");
 
-	o = new Obj("./icosphere.obj");
+	o = new Obj("./cube2.obj");
 
 	//o = new Obj("./scenez.obj");
 	//o->loadMaterials("scene.mtl");
