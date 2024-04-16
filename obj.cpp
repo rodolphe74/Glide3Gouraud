@@ -1,6 +1,8 @@
 #include "obj.h"
 #include <stdarg.h>
 
+std::map<std::string, Material> Obj::materials;
+
 void Obj::cut(char *src, int start, int end, char *target)
 {
 	int k = 0;
@@ -216,8 +218,6 @@ void Obj::loadMaterials(const char *filename)
 	char buffer[MILLEVINGTQUATRE];
 	char header[MILLEVINGTQUATRE + 1];
 	int materialsCount = 0;
-	int diffuseCount = 0;
-	int specularCount = 0;
 	int i = 0;
 
 	filePointer = fopen(filename, "r");
@@ -233,17 +233,17 @@ void Obj::loadMaterials(const char *filename)
 	char **materialNameList = new char *[materialsCount];
 	float **diffuseList = new float *[materialsCount];
 	float **specularList = new float *[materialsCount];
-	float **ambient = new float *[materialsCount];
-	float **shininess = new float *[materialsCount];
+	float **ambientList = new float *[materialsCount];
+	float **shininessList = new float *[materialsCount];
 
 	filePointer = fopen(filename, "r");
 	while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
 		memset(header, 0, sizeof(header));
 		int howMany = sscanf(buffer, "%s ", header);
 		if (strcmp("newmtl", header) == 0) {
-			char name[256];
-			howMany = sscanf(buffer, "%s %s", header, &name);
-			strcpy(*(materialNameList + i), name);
+			char* materialName = new char[256];
+			memset(materialName, 0, 256);
+			*(materialNameList + i) = materialName;
 			i++;
 		}
 	}
@@ -297,7 +297,7 @@ void Obj::loadMaterials(const char *filename)
 			n[0] = x;
 			n[1] = y;
 			n[2] = z;
-			*(ambient + i) = n;
+			*(ambientList + i) = n;
 			i++;
 		}
 	}
@@ -313,19 +313,50 @@ void Obj::loadMaterials(const char *filename)
 			howMany = sscanf(buffer, "%s %f", header, &x);
 			float *n = new float[1];
 			n[0] = x;
-			*(shininess + i) = n;
+			*(shininessList + i) = n;
 			i++;
 		}
 	}
 	fclose(filePointer);
 
-	for (int i = 0; i < diffuseCount; i++) {
+	// feed materials dictionary
+	for (int i = 0; i < materialsCount; i++) {
+		if (materialNameList[0]) {
+			Material m;
+			m.diffuseLightColor[0] = diffuseList[i][0];
+			m.diffuseLightColor[1] = diffuseList[i][1];
+			m.diffuseLightColor[2] = diffuseList[i][2];
+
+			m.specularLightColor[0] = specularList[i][0];
+			m.specularLightColor[1] = specularList[i][1];
+			m.specularLightColor[2] = specularList[i][2];
+
+			m.ambient[0] = ambientList[i][0];
+			m.ambient[1] = ambientList[i][1];
+			m.ambient[2] = ambientList[i][2];
+
+			m.shininess = (int)(*shininessList[i]);
+
+			m.specularStrength = 1.0f;
+
+			std::string materialNameString = std::string(materialNameList[0]);
+			materials.insert(std::pair<std::string, Material>(materialNameString, m));
+		}
+	}
+
+	for (int i = 0; i < materialsCount; i++) {
+		delete[] materialNameList[i];
+	}
+	for (int i = 0; i < materialsCount; i++) {
 		delete[] diffuseList[i];
 	}
 	delete[] diffuseList;
 
-	for (int i = 0; i < specularCount; i++) {
+	for (int i = 0; i < materialsCount; i++) {
 		delete[] specularList[i];
+	}
+	for (int i = 0; i < materialsCount; i++) {
+		delete[] shininessList[i];
 	}
 	delete[] specularList;
 }
@@ -334,10 +365,6 @@ void Obj::loadMaterials(const char *filename)
 Vertex *Obj::createVertex(double x, double y, double z)
 {
 	Vertex *v = new Vertex;
-	//v->pos[0] = (float)x;
-	//v->pos[1] = (float)y;
-	//v->pos[2] = (float)z;
-	//v->pos[3] = (float)1;
 	v->pos.x = (float)x;
 	v->pos.y = (float)y;
 	v->pos.z = (float)z;
@@ -375,7 +402,6 @@ void Obj::printVertex(Vertex *v)
 
 double Obj::getVertexCoord(Vertex *v, int i)
 {
-	//return v->pos[i];
 	switch (i)
 	{
 	case 0:
@@ -391,6 +417,7 @@ double Obj::getVertexCoord(Vertex *v, int i)
 		return v->pos.w;
 		break;
 	default:
+		return 0;
 		break;
 	}
 }
@@ -460,6 +487,10 @@ void Obj::freeUselessVertices()
 			freeVertex(o.vertices[i]);
 		}
 	}
+}
+
+void Obj::freeMaterials()
+{
 }
 
 Obj::~Obj()

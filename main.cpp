@@ -39,11 +39,8 @@ int Start(HWND hwin)
 	lg = createLight(0.0f, 0.0f, 8.0f, c, 255.0f);
 
 	// o = new Obj("./Donkey.obj");
-
-	o = new Obj("./cube3.obj");
-
-	//o = new Obj("./scenez.obj");
-	//o->loadMaterials("scene.mtl");
+	o = new Obj("./scene.obj");
+	o->loadMaterials("scene.mtl");
 
 	// Init Glide
 	grGlideInit();

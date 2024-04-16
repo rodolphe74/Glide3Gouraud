@@ -86,6 +86,7 @@ public:
 	void freeFace(Face *f);
 	int addFace(Face *f);
 	void freeUselessVertices();
+	void freeMaterials();
 	~Obj();
 };
 
