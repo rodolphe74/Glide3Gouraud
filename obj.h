@@ -21,9 +21,12 @@ typedef struct _color {
 	unsigned char b;
 } Color;
 
+typedef struct _vec4 {
+	float x, y, z, w;
+} Vec4;
+
 typedef struct _vertex {
-	float pos[4];
-	float normal[4];
+	Vec4 pos;
 	Color colour;
 	int referencesCount = 0;
 	Material material;
@@ -31,11 +34,12 @@ typedef struct _vertex {
 
 typedef struct _face {
 	std::vector<Vertex *> vertices;
+	std::vector<Vec4> normals;
 } Face;
 
 typedef struct _object {
 	std::vector<Face *> faces;
-	std::vector<Vertex*> verticesList;
+	std::vector<Vertex*> vertices;
 	Color color;
 } Object;
 
@@ -71,12 +75,13 @@ public:
 	void loadMaterials(const char *filename);
 	Vertex *createVertex(double x, double y, double z);
 	Vertex *createVertexColor(double x, double y, double z, Color c);
-	void setNormal(Vertex *v, float x, float y, float z);
+	void setNormal(Face* f, int i, float x, float y, float z);
 	void freeVertex(Vertex *v);
 	void printVertex(Vertex *v);
 	double getVertexCoord(Vertex *v, int i);
 	Face *createFace(int length, ...);
 	int addVertexToFace(Face *f, Vertex *v);
+	int setVertexToFace(Face* f, int i, Vertex* v);
 	void computeNormal(Face *f);
 	void freeFace(Face *f);
 	int addFace(Face *f);

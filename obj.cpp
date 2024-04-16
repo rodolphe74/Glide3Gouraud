@@ -78,7 +78,7 @@ Obj::Obj(const char *filename)
 	}
 	fclose(filePointer);
 
-	o.verticesList.reserve(vertices_count);
+	o.vertices.reserve(vertices_count);
 	float **normals_list = new float *[normals_count];
 	float **uv_list = new float *[uv_count];
 
@@ -176,13 +176,14 @@ Obj::Obj(const char *filename)
 
 
 			Face *f = createFace(0);
-			f->vertices.reserve(k);
+			f->vertices.resize(k);
+			f->normals.resize(k);
 			for (i = 0; i < k; i++) {
-				Vertex *v = o.verticesList[face_indexes[i] - 1];
-				addVertexToFace(f, v);
-				setNormal(v, normals_list[normal_indexes[i] - 1][0], normals_list[normal_indexes[i] - 1][1], normals_list[normal_indexes[i] - 1][2]);
-
-				// TODO : create an independ list of normals for the face (vertex must not carry normals)
+				Vertex *v = o.vertices[face_indexes[i] - 1];
+				setVertexToFace(f, i, v);
+				
+				// create an independ list of normals for the face
+				setNormal(f, i, normals_list[normal_indexes[i] - 1][0], normals_list[normal_indexes[i] - 1][1], normals_list[normal_indexes[i] - 1][2]);
 
 				// TODO
 				if (uv_indexes[i] - 1 > 0) {
@@ -228,7 +229,7 @@ void Obj::loadMaterials(const char *filename)
 	}
 	fclose(filePointer);
 
-	o.verticesList.reserve(materialsCount);
+	o.vertices.reserve(materialsCount);
 	char **materialNameList = new char *[materialsCount];
 	float **diffuseList = new float *[materialsCount];
 	float **specularList = new float *[materialsCount];
@@ -333,13 +334,17 @@ void Obj::loadMaterials(const char *filename)
 Vertex *Obj::createVertex(double x, double y, double z)
 {
 	Vertex *v = new Vertex;
-	v->pos[0] = (float)x;
-	v->pos[1] = (float)y;
-	v->pos[2] = (float)z;
-	v->pos[3] = (float)1;
+	//v->pos[0] = (float)x;
+	//v->pos[1] = (float)y;
+	//v->pos[2] = (float)z;
+	//v->pos[3] = (float)1;
+	v->pos.x = (float)x;
+	v->pos.y = (float)y;
+	v->pos.z = (float)z;
+	v->pos.w = (float)1;
 	v->colour = white;
 	v->referencesCount = 0;
-	o.verticesList.push_back(v);
+	o.vertices.push_back(v);
 	return v;
 }
 
@@ -350,12 +355,12 @@ Vertex *Obj::createVertexColor(double x, double y, double z, Color c)
 	return v;
 }
 
-void Obj::setNormal(Vertex *v, float x, float y, float z)
+void Obj::setNormal(Face* f, int i, float x, float y, float z)
 {
-	v->normal[0] = x;
-	v->normal[1] = y;
-	v->normal[2] = z;
-	v->normal[3] = 1.0f;
+	f->normals[i].x = x;
+	f->normals[i].y = y;
+	f->normals[i].z = z;
+	f->normals[i].w = 1.0f;
 }
 
 void Obj::freeVertex(Vertex *v)
@@ -370,7 +375,24 @@ void Obj::printVertex(Vertex *v)
 
 double Obj::getVertexCoord(Vertex *v, int i)
 {
-	return v->pos[i];
+	//return v->pos[i];
+	switch (i)
+	{
+	case 0:
+		return v->pos.x;
+		break;
+	case 1:
+		return v->pos.y;
+		break;
+	case 2:
+		return v->pos.z;
+		break;
+	case 3:
+		return v->pos.w;
+		break;
+	default:
+		break;
+	}
 }
 
 Face *Obj::createFace(int length, ...)
@@ -390,6 +412,12 @@ int Obj::addVertexToFace(Face *f, Vertex *v)
 {
 	v->referencesCount++;
 	f->vertices.push_back(v);
+	return 1;
+}
+
+int Obj::setVertexToFace(Face* f, int i, Vertex* v)
+{
+	f->vertices[i] = v;
 	return 1;
 }
 
@@ -427,9 +455,9 @@ int Obj::addFace(Face *f)
 
 void Obj::freeUselessVertices()
 {
-	for (size_t i = 0; i < o.verticesList.size(); i++) {
-		if (o.verticesList[i]->referencesCount == 0) {
-			freeVertex(o.verticesList[i]);
+	for (size_t i = 0; i < o.vertices.size(); i++) {
+		if (o.vertices[i]->referencesCount == 0) {
+			freeVertex(o.vertices[i]);
 		}
 	}
 }
@@ -440,9 +468,9 @@ Obj::~Obj()
 		freeFace(o.faces[i]);
 	}
 
-	for (size_t i = 0; i < o.verticesList.size(); i++) {
-		if (o.verticesList[i]->referencesCount == 0) {
-			freeVertex(o.verticesList[i]);
+	for (size_t i = 0; i < o.vertices.size(); i++) {
+		if (o.vertices[i]->referencesCount == 0) {
+			freeVertex(o.vertices[i]);
 		}
 	}
 }
