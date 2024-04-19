@@ -1,8 +1,8 @@
 #include "obj.h"
 #include <stdarg.h>
 
-std::map<std::string, Material> Obj::materials;
-std::map<std::string, Object *> Obj::objects;
+//std::map<std::string, Material> Obj::materials;
+//std::map<std::string, Object *> Obj::objects;
 
 void Obj::cut(char *src, int start, int end, char *target)
 {
@@ -40,179 +40,20 @@ void Obj::split(char *string, char sep, char token_array[][50])
 
 Obj::Obj()
 {
+	color = WHITE;
 }
 
 Obj::Obj(int length, ...)
 {
-	// TODO create a new object in the map
-
-	//va_list valist;
-	//va_start(valist, length);
-	//for (int i = 0; i < length; i++) {
-	//	Face *f = va_arg(valist, Face *);
-	//	o.faces[i] = f;
-	//}
-	//va_end(valist);
+	color = WHITE;
 }
 
 #pragma warning(push)
 #pragma warning(disable : 6054)
 Obj::Obj(const char *filename)
 {
-	//FILE *filePointer;
-	//// int bufferLength = 1024;
-	//char buffer[MILLEVINGTQUATRE];
-	//char header[MILLEVINGTQUATRE + 1];
-	//int vertices_count = 0;
-	//int normals_count = 0;
-	//int uv_count = 0;
-	//int i = 0;
-
-	//o.color = white;
-
-	//filePointer = fopen(filename, "r");
-	//while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-	//	memset(header, 0, sizeof(header));
-	//	int howMany = sscanf(buffer, "%s ", header);
-	//	if (strcmp("v", header) == 0)
-	//		vertices_count++;
-	//	if (strcmp("vn", header) == 0)
-	//		normals_count++;
-	//	if (strcmp("vt", header) == 0)
-	//		uv_count++;
-	//}
-	//fclose(filePointer);
-
-	//o.vertices.reserve(vertices_count);
-	//float **normals_list = new float *[normals_count];
-	//float **uv_list = new float *[uv_count];
-
-	////printf("vertices count :%d\n", vertices_count);
-	////printf("normalsList count :%d\n", diffuseCount);
-	////printf("uv count :%d\n", specularCount);
-
-	//filePointer = fopen(filename, "r");
-	//while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-	//	memset(header, 0, sizeof(header));
-	//	int howMany = sscanf(buffer, "%s ", header);
-	//	if (strcmp("v", header) == 0) {
-	//		float x, y, z;
-	//		howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-	//		Vertex *v = createVertex(x, y, z);
-	//		i++;
-	//	}
-	//}
-	//fclose(filePointer);
-
-	//i = 0;
-	//filePointer = fopen(filename, "r");
-	//while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-	//	memset(header, 0, sizeof(header));
-	//	int howMany = sscanf(buffer, "%s ", header);
-	//	if (strcmp("vn", header) == 0) {
-	//		float x, y, z;
-	//		howMany = sscanf(buffer, "%s %f %f %f", header, &x, &y, &z);
-	//		float *n = new float[3];
-	//		n[0] = x;
-	//		n[1] = y;
-	//		n[2] = z;
-	//		normals_list[i] = n;
-	//		i++;
-	//	}
-	//}
-	//fclose(filePointer);
-
-	//i = 0;
-	//filePointer = fopen(filename, "r");
-	//while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-	//	memset(header, 0, sizeof(header));
-	//	int howMany = sscanf(buffer, "%s ", header);
-	//	if (strcmp("vt", header) == 0) {
-	//		float u, v;
-	//		howMany = sscanf(buffer, "%s %f %f", header, &u, &v);
-	//		float *t = new float[2];
-	//		t[0] = u;
-	//		t[1] = v;
-	//		uv_list[i] = t;
-	//		i++;
-	//	}
-	//}
-	//fclose(filePointer);
-
-
-	//filePointer = fopen(filename, "r");
-	//int face_indexes[10];
-	//int normal_indexes[10];
-	//int uv_indexes[10];
-	//char token_array[3][50];
-
-	//int k;
-
-	//while (fgets(buffer, MILLEVINGTQUATRE, filePointer)) {
-	//	memset(header, 0, sizeof(header));
-	//	int howMany = sscanf(buffer, "%s ", header);
-	//	if (strcmp("f", header) == 0) {
-	//		i = 0;
-	//		k = 0;
-	//		char *token;
-	//		const char s[2] = " ";
-	//		token = strtok(buffer, s);
-	//		while (token != NULL) {
-	//			if (i > 0) {
-	//				split(token, '/', token_array);
-	//				int face_index, normal_index, uv_index;
-
-	//				howMany = sscanf(token_array[0], "%d", &face_index);
-	//				if (strlen(token_array[1]) > 0)
-	//					howMany = sscanf(token_array[1], "%d", &uv_index);
-	//				else
-	//					uv_index = 0;
-	//				howMany = sscanf(token_array[2], "%d", &normal_index);
-
-	//				face_indexes[k] = face_index;
-	//				normal_indexes[k] = normal_index;
-	//				uv_indexes[k] = uv_index;
-
-	//				k++;
-	//			}
-	//			token = strtok(NULL, s);
-	//			i++;
-	//		}
-
-
-	//		Face *f = createFace(0);
-	//		f->vertices.resize(k);
-	//		f->normals.resize(k);
-	//		for (i = 0; i < k; i++) {
-	//			Vertex *v = o.vertices[face_indexes[i] - 1];
-	//			setVertexToFace(f, i, v);
-	//			
-	//			// create an independ list of normalsList for the face
-	//			setNormal(f, i, normals_list[normal_indexes[i] - 1][0], normals_list[normal_indexes[i] - 1][1], normals_list[normal_indexes[i] - 1][2]);
-
-	//			// TODO
-	//			if (uv_indexes[i] - 1 > 0) {
-	//				//  set_uv(v, 1.0 * specularList[uv_indexes[i] - 1][0],
-	//				//  1.0 * specularList[uv_indexes[i] - 1][1]);
-	//			}
-	//			else {
-	//				//  set_uv(v, 1.0, 1.0);
-	//			}
-	//		}
-	//		addFace(f);
-	//	}
-	//}
-	//fclose(filePointer);
-
-	//for (int i = 0; i < normals_count; i++) {
-	//	delete[] normals_list[i];
-	//}
-	//delete[] normals_list;
-
-	//for (int i = 0; i < uv_count; i++) {
-	//	delete[] uv_list[i];
-	//}
-	//delete[] uv_list;
+	color = WHITE;
+	loadObjects(filename);
 }
 
 void Obj::loadObjects(const char *filename)
@@ -242,7 +83,7 @@ void Obj::loadObjects(const char *filename)
 	normalsList.clear();
 	uvsList.clear();
 
-	color = white;
+	color = WHITE;
 
 	// First, read whole file and create every vertex
 	filePointer = fopen(filename, "r");
@@ -298,7 +139,7 @@ void Obj::loadObjects(const char *filename)
 			howMany = sscanf(buffer, "%s %s", header, objectName);
 			// Prepare a new object
 			currentObject = createObject();
-			currentObject->color = white;
+			currentObject->color = WHITE;
 			objects.insert(std::pair<std::string, Object *>(objectName, currentObject));
 			continue;
 		}
@@ -534,9 +375,21 @@ void Obj::applyMaterials()
 			memcpy(it->second->material.specularLightColor, material.specularLightColor, sizeof(float) * 3);
 			memcpy(it->second->material.ambient, material.ambient, sizeof(float) * 3);
 			it->second->material.specularStrength = material.specularStrength;
-			it->second->material.shininess = material.shininess;
+			// it->second->material.shininess = material.shininess;
+			// from blender -> 0,900 to 0,128
+			it->second->material.shininess = (int)(((127 * material.shininess) / 900) + 1);
 		}
 	}
+}
+
+void Obj::applyMaterial(Object *o, Material *m)
+{
+	memcpy(o->material.diffuseLightColor, m->diffuseLightColor, sizeof(float) * 3);
+	memcpy(o->material.specularLightColor, m->specularLightColor, sizeof(float) * 3);
+	memcpy(o->material.ambient, m->ambient, sizeof(float) * 3);
+	o->material.specularStrength = m->specularStrength;
+	o->material.shininess = m->shininess;
+	
 }
 
 
@@ -547,7 +400,7 @@ Vertex *Obj::createVertex(double x, double y, double z)
 	v->pos.y = (float)y;
 	v->pos.z = (float)z;
 	v->pos.w = (float)1;
-	v->colour = white;
+	v->colour = WHITE;
 	v->referencesCount = 0;
 	//o.vertices.push_back(v);
 	vertices.push_back(v);

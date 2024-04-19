@@ -17,42 +17,9 @@ static std::chrono::steady_clock::time_point endTime;
 static double countLap = 0;
 static double sumLap = 0;
 
-// Bronze
-float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white Light diffuse
-float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
-float ambient[] = { 1.0f, 0.5f, 0.31f };
+// default base material for WF objects
+float ambient[] = { 0.2f, 0.2f, 0.2f };				// default ambient for exported WF objects
 float specularStrength = 1.0f;
-int shininess = 52;
-
-// Jade
-//float diffuseLightColor[] = { 0.54f, 0.89f, 0.63f }; // white Light diffuse
-//float specularLightColor[] = { 0.316228f, 	0.316228f, 0.316228f };
-//float ambient[] = { 0.135f, 0.2225f, 0.1575f };
-//float specularStrength = 1.0f;
-//int shininess = 13;
-
-
-// Turquoise
-//float diffuseLightColor[] = { 0.396f, 0.74151f, 0.69102f };
-//float specularLightColor[] = { 0.297254f, 0.30829f, 0.306678f };
-//float ambient[] = { 0.1f, 0.18725f,    0.1745f };
-//float specularStrength = 1.0f;
-//int shininess = 26;
-
-// Black rubber
-//float diffuseLightColor[] = { 0.01f, 0.01f, 0.01f };
-//float specularLightColor[] = { 0.4f, 0.4f, 0.4f };
-//float ambient[] = { 0.02f, 0.02f, 0.02f };
-//float specularStrength = 1.0f;
-//int shininess = 20;
-
-// Chrome
-//float diffuseLightColor[] = { 0.4f, 0.4f, 0.4f };
-//float specularLightColor[] = { 0.774597f, 0.774597f, 0.774597f };
-//float ambient[] = { 0.25f, 0.25f, 0.25f };
-//float specularStrength = 1.0f;
-//int shininess = 150;
-
 
 
 void lookAt(Matrix &position, Matrix &target, Matrix &up, Matrix &mat)
@@ -343,6 +310,7 @@ void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &f
 	Matrix diffuseLightColorV(VEC3);
 	Matrix ambientDiffuseSpecular(VEC3);
 	Matrix cameraPos(VEC4);
+	Material *currentMaterial;
 
 	lightColor.v[0] = l->c.r;
 	lightColor.v[1] = l->c.g;
@@ -352,15 +320,11 @@ void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &f
 	objectColor.v[1] = o.color.g;
 	objectColor.v[2] = o.color.b;
 
-	//float diffuseLightColor[] = { 1.0f, 0.5f, 0.31f }; // white Light diffuse
-	//float specularLightColor[] = { 0.5f, 0.5f, 0.5f };
-	//float ambient[] = { 1.0f, 0.5f, 0.31f };
-	//float specularStrength = 1.0f;
-	//int shininess = 52;
-
-
 	std::map<std::string, Object *>::iterator it;
 	for (it = o.objects.begin(); it != o.objects.end(); it++) {
+
+		currentMaterial = &it->second->material;
+
 		for (size_t i = 0; i < it->second->faces.size(); i++) {
 			Face *f = it->second->faces[i];
 			int sz = f->vertices.size();
@@ -384,13 +348,13 @@ void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &f
 				lightDir.vec3Normalize();
 
 				float diff = MAX(worldNorm.vec3DotReal(lightDir), 0);
-				diffuseLightColorV.v[0] = diffuseLightColor[0];
-				diffuseLightColorV.v[1] = diffuseLightColor[1];
-				diffuseLightColorV.v[2] = diffuseLightColor[2];
+				diffuseLightColorV.v[0] = currentMaterial->diffuseLightColor[0];
+				diffuseLightColorV.v[1] = currentMaterial->diffuseLightColor[1];
+				diffuseLightColorV.v[2] = currentMaterial->diffuseLightColor[2];
 				diffuseLightColorV.vecMulScalar(diff);
-				ambientDiffuseSpecular.v[0] = ambient[0];
-				ambientDiffuseSpecular.v[1] = ambient[1];
-				ambientDiffuseSpecular.v[2] = ambient[2];
+				ambientDiffuseSpecular.v[0] = currentMaterial->ambient[0];
+				ambientDiffuseSpecular.v[1] = currentMaterial->ambient[1];
+				ambientDiffuseSpecular.v[2] = currentMaterial->ambient[2];
 				ambientDiffuseSpecular.vecAddVec(diffuseLightColorV);
 
 				// Specular ///////////
@@ -404,10 +368,10 @@ void renderObject(Light *l, Obj &o, Matrix &view, Matrix &perspective, Matrix &f
 				negLightDir.v[2] = -lightDir.v[2];
 				reflectDir.clear();
 				__reflect(reflectDir, negLightDir, worldNorm);
-				float spec = (float)std::pow((float)MAX(viewDir.vec3DotReal(reflectDir), 0.0f), (float)shininess);
-				specular.v[0] = specularLightColor[0];
-				specular.v[1] = specularLightColor[1];
-				specular.v[2] = specularLightColor[2];
+				float spec = (float)std::pow((float)MAX(viewDir.vec3DotReal(reflectDir), 0.0f), currentMaterial->shininess /*(float)shininess*/);
+				specular.v[0] = currentMaterial->specularLightColor[0];
+				specular.v[1] = currentMaterial->specularLightColor[1];
+				specular.v[2] = currentMaterial->specularLightColor[2];
 				specular.vecMulScalar(spec * specularStrength);
 				specular.vecMulVec(lightColor);
 

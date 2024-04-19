@@ -13,10 +13,10 @@
 
 #include "matrix.h"
 
-Obj *o;
+Obj *o, *s;
 Light *lg;
 
-Matrix _fromPosition_({ 0.0f, 0.0f, 5.0f }, VEC3);
+Matrix _fromPosition_({ 0.0f, 0.0f, 3.0f }, VEC3);
 //Matrix _fromPosition_({ 0.0f, 4.0f, 18.0f }, VEC3);
 Matrix _toTarget_({ 0.0f, 0.0f, 0.0f }, VEC3);
 Matrix _up_({ 0.0f, 1.0f, 0.0f }, VEC3);
@@ -31,14 +31,15 @@ int Start(HWND hwin)
 {
 	// DEBUG
 	o = new Obj();
-	o->loadObjects("./scene.obj");
-	//o->loadObjects("./cube4.obj");
-	//delete o;
-	//exit(0);
-	////////
+	o->loadObjects("./icosphere3.obj");
+	o->loadMaterials("icosphere3.mtl");
+	o->applyMaterials();
+	// o->applyMaterial(o->objects["Icosphere"], &CYAN_PLASTIC);
 
-
-
+	//s = new Obj();
+	//s->loadObjects("icosphere.obj");
+	//s->applyMaterial(s->objects["Icosphere"], &BRONZE);
+	
 	lookAt(_fromPosition_, _toTarget_, _up_, _view_);
 	perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
 
@@ -48,10 +49,8 @@ int Start(HWND hwin)
 	Color c = { 255, 255, 255 };
 	lg = createLight(0.0f, 0.0f, 8.0f, c, 255.0f);
 
-	// o = new Obj("./Donkey.obj");
-	//o = new Obj("./cube4.obj");
-	o->loadMaterials("scene.mtl");
-	o->applyMaterials();
+
+	
 
 	// Init Glide
 	grGlideInit();
@@ -100,12 +99,17 @@ void End()
 int Update()
 {
 	// Clear buffers : color buffer = 0, alpha buffer and depth buffer : not used
-	grBufferClear(0x410994, 0, 0xFFFF);
+	// grBufferClear(0x410994, 0, 0xFFFF);
+	grBufferClear(0x202020, 0, 0xFFFF);
 
 	startLap();
 	transformObject(*o, _rotationY_);
 	transformObject(*o, _rotationZ_);
 	renderObject(lg, *o, _view_, _perspective_, _fromPosition_, 640, 480, false);
+
+	//transformObject(*s, _rotationY_);
+	//renderObject(lg, *s, _view_, _perspective_, _fromPosition_, 640, 480, false);
+
 	endLap("Update");
 
 	// Wait for vertical retrace and Swap buffers.
