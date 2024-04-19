@@ -6,6 +6,7 @@
 #include "globals.h"
 
 #define MILLEVINGTQUATRE 1024
+#define DEUXCENTCINQUANTESIX 256
 
 typedef struct _material {
 	float diffuseLightColor[3];		// Kd
@@ -39,8 +40,9 @@ typedef struct _face {
 
 typedef struct _object {
 	std::vector<Face *> faces;
-	std::vector<Vertex*> vertices;
 	Color color;
+	char materialName[DEUXCENTCINQUANTESIX];
+	Material material;
 } Object;
 
 typedef struct _light {
@@ -67,26 +69,32 @@ private:
 	void split(char *string, char sep, char token_array[][50]);
 
 public:
-	Object o;
+	//Object o;
+	Color color;
+	std::vector<Vertex *> vertices;
 	static std::map<std::string, Material> materials;
+	static std::map<std::string, Object *> objects;
 	Obj();
 	Obj(int length, ...);
 	Obj(const char *filename);
+	void loadObjects(const char *filename);
 	void loadMaterials(const char *filename);
+	void applyMaterials();
 	Vertex *createVertex(double x, double y, double z);
 	Vertex *createVertexColor(double x, double y, double z, Color c);
 	void setNormal(Face* f, int i, float x, float y, float z);
 	void freeVertex(Vertex *v);
 	void printVertex(Vertex *v);
 	double getVertexCoord(Vertex *v, int i);
-	Face *createFace(int length, ...);
+	Face *createFace(Object *o, int length, ...);
 	int addVertexToFace(Face *f, Vertex *v);
 	int setVertexToFace(Face* f, int i, Vertex* v);
 	void computeNormal(Face *f);
 	void freeFace(Face *f);
-	int addFace(Face *f);
+	int addFace(Object *o, Face *f);
 	void freeUselessVertices();
 	void freeMaterials();
+	Object *createObject();
 	~Obj();
 };
 

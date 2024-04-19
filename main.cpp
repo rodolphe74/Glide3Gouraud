@@ -29,6 +29,16 @@ Matrix _translationY_(VEC4);
 
 int Start(HWND hwin)
 {
+	// DEBUG
+	o = new Obj();
+	o->loadObjects("./scene.obj");
+	//o->loadObjects("./cube4.obj");
+	//delete o;
+	//exit(0);
+	////////
+
+
+
 	lookAt(_fromPosition_, _toTarget_, _up_, _view_);
 	perspective((float)TO_RADIAN(90.0f), 1.0f, 0.1f, 100.0f, _perspective_);
 
@@ -39,8 +49,9 @@ int Start(HWND hwin)
 	lg = createLight(0.0f, 0.0f, 8.0f, c, 255.0f);
 
 	// o = new Obj("./Donkey.obj");
-	o = new Obj("./scene.obj");
+	//o = new Obj("./cube4.obj");
 	o->loadMaterials("scene.mtl");
+	o->applyMaterials();
 
 	// Init Glide
 	grGlideInit();
