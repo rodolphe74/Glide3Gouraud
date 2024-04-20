@@ -31,10 +31,10 @@ int Start(HWND hwin)
 {
 	// DEBUG
 	o = new Obj();
-	o->loadObjects("./icosphere3.obj");
-	o->loadMaterials("icosphere3.mtl");
-	o->applyMaterials();
-	// o->applyMaterial(o->objects["Icosphere"], &CYAN_PLASTIC);
+	o->loadObjects("./icosphere.obj");
+	//o->loadMaterials("icosphere3.mtl");
+	//o->applyMaterials();
+	o->applyMaterial(o->objects["Icosphere"], &CYAN_PLASTIC);
 
 	//s = new Obj();
 	//s->loadObjects("icosphere.obj");
